@@ -19,4 +19,22 @@ include_directories(
   ${GTEST_INCLUDE_DIRS}
   )
 
+function(CLibAddExecutable executable sources)
+  add_executable(${executable} ${sources})
+  target_link_libraries(${executable}
+    ${CMAKE_THREAD_LIBS_INIT}
+  )
+endfunction()
+
+function(CLibAddTest executable sources)
+  CLibAddExecutable(${executable} ${sources})
+  target_link_libraries(${executable}
+    ${GTEST_BOTH_LIBRARIES}
+  )
+endfunction()
+
+function(CLibAddLibrary library sources)
+  add_library(${library} SHARED ${sources})
+endfunction()
+
 add_subdirectory(${PROJECT_SOURCE_DIR})
