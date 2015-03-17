@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 2.8.12.2)
 
 project(clib C CXX)
 
@@ -30,6 +30,7 @@ function(clib_add_unittest executable)
   clib_add_executable(${executable} ${ARGN})
   target_link_libraries(${executable}
     ${GTEST_BOTH_LIBRARIES}
+    ${CMAKE_THREAD_LIBS_INIT}
   )
 endfunction()
 
