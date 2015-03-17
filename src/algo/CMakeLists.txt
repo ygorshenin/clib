@@ -1,5 +1,7 @@
 clib_add_library(algo
   fenwick.h
+  kmp.cc
+  kmp.h
   rmq.h
   suffix_array.cc
   suffix_array.h
@@ -7,6 +9,7 @@ clib_add_library(algo
 
 clib_add_unittest(algo_unittest
   fenwick_unittest.cc
+  kmp_unittest.cc
   rmq_unittest.cc
   suffix_array_unittest.cc
   )
