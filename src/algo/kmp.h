@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <vector>
 
 namespace algo {
 
@@ -10,5 +11,11 @@ namespace algo {
 // proper suffix of pattern[0 .. i + 1) which is also a prefix of
 // pattern[0 .. i).
 void BuildPrefixFunction(size_t size, const char* pattern, size_t* prefix);
+
+void KMP(size_t text_size,
+         const char* text,
+         size_t pattern_size,
+         const char* pattern,
+         std::vector<size_t>& matches);
 
 }  // namespace algo

@@ -30,4 +30,37 @@ TEST(KMP, Small) {
   ASSERT_EQ(expected, p);
 }
 
+TEST(KMP, EmptyPatternMatching) {
+  std::string s("hello");
+  std::string p("");
+
+  std::vector<size_t> matches;
+  KMP(s.size(), s.data(), p.size(), p.data(), matches);
+
+  std::vector<size_t> expected = {0, 1, 2, 3, 4, 5};
+  ASSERT_EQ(expected, matches);
+}
+
+TEST(KMP, SampleMatching) {
+  std::string s("ababab");
+  std::string p("ba");
+
+  std::vector<size_t> matches;
+  KMP(s.size(), s.data(), p.size(), p.data(), matches);
+
+  std::vector<size_t> expected = {1, 3};
+  ASSERT_EQ(expected, matches);
+}
+
+TEST(KMP, SameLetterMatching) {
+  std::string s("aaaaaaaaaa");
+  std::string p("aaa");
+
+  std::vector<size_t> matches;
+  KMP(s.size(), s.data(), p.size(), p.data(), matches);
+
+  std::vector<size_t> expected = {0, 1, 2, 3, 4, 5, 6, 7};
+  ASSERT_EQ(expected, matches);
+}
+
 }  // namespace algo
