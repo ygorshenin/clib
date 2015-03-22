@@ -15,7 +15,9 @@ int main() {
 
   algo::MatrixAdapter<size_t> a(kHeight, kWidth, ma);
   algo::MatrixAdapter<size_t> b(kWidth, kHeight, mb);
-  algo::TransposeFast(a, b);
+
+  algo::MatrixTranspose<size_t, algo::MatrixAdapter> transpose(a, b);
+  transpose.Go();
 
   for (size_t i = 0; i < b.width(); ++i) {
     if (b(0, i) != i * kWidth) {

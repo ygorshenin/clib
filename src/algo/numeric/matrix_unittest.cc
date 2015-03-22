@@ -7,11 +7,7 @@ namespace algo {
 TEST(Matrix, Basic) {
   const size_t kHeight = 3;
   const size_t kWidth = 4;
-  int data[kHeight * kWidth] = {
-    0, 1, 2, 3,
-    4, 5, 6, 7,
-    8, 9, 10, 11
-  };
+  int data[kHeight * kWidth] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
   MatrixAdapter<int> matrix(kHeight, kWidth, data);
   ASSERT_EQ(kHeight, matrix.height());
@@ -30,19 +26,17 @@ TEST(Matrix, Basic) {
 TEST(Matrix, Transpose) {
   const size_t kHeight = 3;
   const size_t kWidth = 4;
-  int data[kHeight * kWidth] = {
-    0, 1, 2, 3,
-    4, 5, 6, 7,
-    8, 9, 10, 11
-  };
+  int data[kHeight * kWidth] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
   int tdata[kHeight * kWidth];
 
   MatrixAdapter<int> a(kHeight, kWidth, data);
   MatrixAdapter<int> b(kWidth, kHeight, tdata);
-  TransposeFast(a, b);
+  MatrixTranspose<int, MatrixAdapter> transpose(a, b);
+
+  transpose.Go();
 
   for (size_t row = 0; row < b.height(); ++row) {
-    for(size_t col = 0; col < b.width(); ++col)
+    for (size_t col = 0; col < b.width(); ++col)
       ASSERT_EQ(a(col, row), b(row, col));
   }
 }
