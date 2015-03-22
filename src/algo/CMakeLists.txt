@@ -1,4 +1,5 @@
 clib_add_library(algo
+  numeric/matrix.h
   sequences/fenwick.h
   sequences/rmq.h
   strings/kmp.cc
@@ -8,6 +9,7 @@ clib_add_library(algo
   )
 
 clib_add_unittest(algo_unittest
+  numeric/matrix_unittest.cc
   sequences/fenwick_unittest.cc
   sequences/rmq_unittest.cc
   strings/kmp_unittest.cc
