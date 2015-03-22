@@ -2,6 +2,15 @@ cmake_minimum_required(VERSION 2.8.12.2)
 
 project(clib C CXX)
 
+option(USE_CLANG "Build application with clang" OFF)
+option(USE_ADDRESS_SANITIZER "Build application with clang address-sanitizer" OFF)
+
+if (USE_CLANG)
+  message("Using clang compiler")
+  set(CMAKE_C_COMPILER clang)
+  set(CMAKE_CXX_COMPILER clang++)
+endif()
+
 find_package(GTest REQUIRED)
 find_package(Threads REQUIRED)
 
@@ -14,6 +23,13 @@ add_compile_options(
   "-std=c++11"
   )
 
+if (USE_ADDRESS_SANITIZER)
+  add_compile_options(
+    "-fsanitize=address"
+    "-fno-omit-frame-pointer"
+    )
+endif()
+
 include_directories(
   ${PROJECT_SOURCE_DIR}
   ${GTEST_INCLUDE_DIRS}
@@ -21,9 +37,9 @@ include_directories(
 
 function(clib_add_executable executable)
   add_executable(${executable} ${ARGN})
-  target_link_libraries(${executable}
-    ${CMAKE_THREAD_LIBS_INIT}
-  )
+  if (USE_ADDRESS_SANITIZER)
+    target_link_libraries(${executable} "-fsanitize=address")
+  endif()
 endfunction()
 
 function(clib_add_unittest executable)
