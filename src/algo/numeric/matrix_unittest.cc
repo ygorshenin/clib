@@ -39,7 +39,7 @@ TEST(Matrix, Transpose) {
 
   MatrixAdapter<int> a(kHeight, kWidth, data);
   MatrixAdapter<int> b(kWidth, kHeight, tdata);
-  Transpose(a, b);
+  TransposeFast(a, b);
 
   for (size_t row = 0; row < b.height(); ++row) {
     for(size_t col = 0; col < b.width(); ++col)

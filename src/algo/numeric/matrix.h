@@ -45,12 +45,24 @@ class MatrixAdapter {
 };
 
 template <typename T, template <typename> class Matrix>
-void Transpose(const Matrix<T>& a, Matrix<T>& b) {
+void TransposeFast(const Matrix<T>& a, Matrix<T>& b) {
   assert(a.height() == b.width());
   assert(a.width() == b.height());
 
   impl::TransposeImpl(0, a.height(), 0, a.width(), a, b);
 }
+
+template <typename T, template <typename> class Matrix>
+void TransposeSlow(const Matrix<T>& a, Matrix<T>& b) {
+  assert(a.height() == b.width());
+  assert(a.width() == b.height());
+
+  for (size_t row = 0; row < a.height(); ++row) {
+    for (size_t col = 0; col < a.width(); ++col)
+      b(col, row) = a(row, col);
+  }
+}
+
 
 namespace impl {
 
@@ -61,21 +73,22 @@ void TransposeImpl(size_t min_row,
                    size_t max_col,
                    const Matrix<T>& a,
                    Matrix<T>& b) {
-  size_t height = max_row - min_row;
-  size_t width = max_col - min_col;
+  const size_t height = max_row - min_row;
+  const size_t width = max_col - min_col;
 
   if (!height || !width)
     return;
 
-  if (height * sizeof(T) <= CLS && width * sizeof(T) < CLS) {
+  if (height * sizeof(T) <= CLS && width * sizeof(T) <= CLS) {
     for (size_t row = min_row; row < max_row; ++row) {
       for (size_t col = min_col; col < max_col; ++col)
         b(col, row) = a(row, col);
     }
     return;
   }
-  size_t middle_row = min_row + height / 2;
-  size_t middle_col = min_col + width / 2;
+
+  const size_t middle_row = min_row + height / 2;
+  const size_t middle_col = min_col + width / 2;
   TransposeImpl(min_row, middle_row, min_col, middle_col, a, b);
   TransposeImpl(min_row, middle_row, middle_col, max_col, a, b);
   TransposeImpl(middle_row, max_row, min_col, middle_col, a, b);
