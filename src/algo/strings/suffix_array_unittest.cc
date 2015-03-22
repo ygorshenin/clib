@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <vector>
 
-#include "algo/suffix_array.h"
+#include "algo/strings/suffix_array.h"
 
 namespace algo {
 

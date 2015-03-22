@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "algo/fenwick.h"
+#include "algo/sequences/fenwick.h"
 
 namespace algo {
 

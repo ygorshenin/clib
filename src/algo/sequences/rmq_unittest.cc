@@ -5,7 +5,7 @@
 #include <vector>
 #include <limits>
 
-#include "algo/rmq.h"
+#include "algo/sequences/rmq.h"
 
 namespace algo {
 

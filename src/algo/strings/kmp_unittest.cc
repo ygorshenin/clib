@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "algo/kmp.h"
+#include "algo/strings/kmp.h"
 
 namespace algo {
 

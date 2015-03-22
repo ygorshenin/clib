@@ -1,4 +1,4 @@
-#include "algo/suffix_array.h"
+#include "algo/strings/suffix_array.h"
 
 #include <algorithm>
 #include <limits>
