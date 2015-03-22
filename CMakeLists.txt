@@ -21,6 +21,7 @@ add_compile_options(
   "-Wall"
   "-pedantic"
   "-std=c++11"
+  "-g"
   )
 
 if (USE_ADDRESS_SANITIZER)

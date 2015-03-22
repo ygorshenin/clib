@@ -63,4 +63,34 @@ TEST(KMP, SameLetterMatching) {
   ASSERT_EQ(expected, matches);
 }
 
+TEST(Z, EmptyText) {
+  std::string s("");
+  std::vector<size_t> z(s.size());
+  Z(s.size(), s.data(), z.data());
+}
+
+TEST(Z, Samples) {
+  {
+    std::string s("aaaaa");
+    std::vector<size_t> expected = {0, 4, 3, 2, 1};
+    std::vector<size_t> z(s.size());
+    Z(s.size(), s.data(), z.data());
+    ASSERT_EQ(expected, z);
+  }
+  {
+    std::string s("aaabaab");
+    std::vector<size_t> expected = {0, 2, 1, 0, 2, 1, 0};
+    std::vector<size_t> z(s.size());
+    Z(s.size(), s.data(), z.data());
+    ASSERT_EQ(expected, z);
+  }
+  {
+    std::string s("abacaba");
+    std::vector<size_t> expected = {0, 0, 1, 0, 3, 0, 1};
+    std::vector<size_t> z(s.size());
+    Z(s.size(), s.data(), z.data());
+    ASSERT_EQ(expected, z);
+  }
+}
+
 }  // namespace algo
