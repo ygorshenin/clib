@@ -42,14 +42,38 @@ TEST(KMP, EmptyPatternMatching) {
 }
 
 TEST(KMP, SampleMatching) {
-  std::string s("ababab");
-  std::string p("ba");
-
-  std::vector<size_t> matches;
-  KMP(s.size(), s.data(), p.size(), p.data(), matches);
-
-  std::vector<size_t> expected = {1, 3};
-  ASSERT_EQ(expected, matches);
+  {
+    std::string s("ababab");
+    std::string p("ba");
+    std::vector<size_t> matches;
+    KMP(s.size(), s.data(), p.size(), p.data(), matches);
+    std::vector<size_t> expected = {1, 3};
+    ASSERT_EQ(expected, matches);
+  }
+  {
+    std::string s("banananobano");
+    std::string p("na");
+    std::vector<size_t> matches;
+    KMP(s.size(), s.data(), p.size(), p.data(), matches);
+    std::vector<size_t> expected = {2, 4};
+    ASSERT_EQ(expected, matches);
+  }
+  {
+    std::string s("foo");
+    std::string p("foobar");
+    std::vector<size_t> matches;
+    KMP(s.size(), s.data(), p.size(), p.data(), matches);
+    std::vector<size_t> expected = {};
+    ASSERT_EQ(expected, matches);
+  }
+  {
+    std::string s("barfoobarfoobarfoobarfoobarfoo");
+    std::string p("foobarfoo");
+    std::vector<size_t> matches;
+    KMP(s.size(), s.data(), p.size(), p.data(), matches);
+    std::vector<size_t> expected = {3, 9, 15, 21};
+    ASSERT_EQ(expected, matches);
+  }
 }
 
 TEST(KMP, SameLetterMatching) {
