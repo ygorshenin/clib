@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "algo/bits/bitvector.h"
+#include "algo/bits/bit_vector.h"
 
 namespace algo {
 TEST(Bits, BitVector) {
@@ -19,6 +19,7 @@ TEST(Bits, BitVector) {
     ASSERT_FALSE(bits.Test(i));
   for (size_t i : {0, 3, 5, 6, 9})
     ASSERT_TRUE(bits.Test(i));
+  ASSERT_EQ(static_cast<uint64_t>(0b1001101001), bits.Block(0));
 
   bits.Clear(0);
   bits.Clear(1);
@@ -28,5 +29,6 @@ TEST(Bits, BitVector) {
     ASSERT_FALSE(bits.Test(i));
   for (size_t i : {3, 6, 9})
     ASSERT_TRUE(bits.Test(i));
+  ASSERT_EQ(static_cast<uint64_t>(0b1001001000), bits.Block(0));
 }
 }  // namespace algo

@@ -29,6 +29,12 @@ class BitVector {
 
   inline size_t Size() const { return size_; }
 
+  inline size_t NumBlocks() const { return blocks_.size(); }
+
+  inline uint64_t& Block(size_t block) { return blocks_[block]; }
+
+  inline const uint64_t& Block(size_t block) const { return blocks_[block]; }
+
  private:
   std::vector<uint64_t> blocks_;
   size_t const size_;

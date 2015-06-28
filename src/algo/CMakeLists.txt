@@ -1,7 +1,7 @@
 clib_add_library(algo
   bits/bits.cc
   bits/bits.h
-  bits/bitvector.h
+  bits/bit_vector.h
   numeric/matrix.h
   sequences/fenwick.h
   sequences/rmq.h
@@ -15,7 +15,7 @@ clib_add_library(algo
 
 clib_add_unittest(algo_unittest
   bits/bits_unittest.cc
-  bits/bitvector_unittest.cc
+  bits/bit_vector_unittest.cc
   numeric/matrix_unittest.cc
   sequences/fenwick_unittest.cc
   sequences/rmq_unittest.cc
