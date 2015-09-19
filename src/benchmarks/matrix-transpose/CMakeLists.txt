@@ -1,1 +1,1 @@
-clib_add_executable(main main.cc)
+clib_add_executable(matrix-transpose main.cc)

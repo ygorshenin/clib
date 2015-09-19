@@ -21,7 +21,7 @@ add_compile_options(
   "-Wall"
   "-pedantic"
   "-std=c++11"
-  "-g"
+  "-O2"
   )
 
 if (USE_ADDRESS_SANITIZER)
@@ -48,7 +48,7 @@ function(clib_add_unittest executable)
   target_link_libraries(${executable}
     ${GTEST_BOTH_LIBRARIES}
     ${CMAKE_THREAD_LIBS_INIT}
-  )
+    )
 endfunction()
 
 function(clib_add_library library)
