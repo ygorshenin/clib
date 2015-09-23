@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cstdio>
+#include <cstdlib>
 #include <vector>
 
 #include "algo/sequences/merge_sort.h"
@@ -14,11 +15,9 @@ int main() {
 
   algo::MergeSort(data.size(), data.data(), algo::SortOptions(6144 * 1024, 64));
 
-  for (size_t i = 1; i < data.size(); ++i) {
-    if (data[i - 1] > data[i]) {
+  if (!std::is_sorted(data.begin(), data.end())) {
       fprintf(stderr, "Merge sort error\n");
       return 1;
-    }
   }
   return 0;
 }
