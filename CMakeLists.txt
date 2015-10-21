@@ -2,14 +2,7 @@ cmake_minimum_required(VERSION 2.8.12.2)
 
 project(clib C CXX)
 
-option(USE_CLANG "Build application with clang" OFF)
 option(USE_ASAN "Build application with clang Address Sanitizer" OFF)
-
-if (USE_CLANG)
-  message("Using clang compiler")
-  set(CMAKE_C_COMPILER clang)
-  set(CMAKE_CXX_COMPILER clang++)
-endif()
 
 find_package(GTest REQUIRED)
 find_package(Threads REQUIRED)

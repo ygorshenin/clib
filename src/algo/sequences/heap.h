@@ -37,7 +37,8 @@ template <typename T> template <typename V> void Heap<T>::push(V &&value) {
 template <typename T> void Heap<T>::pop() {
   std::swap(buffer_.front(), buffer_.back());
   buffer_.pop_back();
-  OnValueIncreased(0);
+  if (!empty())
+    OnValueIncreased(0);
 }
 
 template <typename T> void Heap<T>::OnValueDecreased(size_t pos) {
