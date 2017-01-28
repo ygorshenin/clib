@@ -29,7 +29,7 @@ RSTable::RSTable(const BitVector &bv) : bv_(bv) {
   }
 }
 
-uint64_t RSTable::Rank(uint64_t n) const {
+uint64_t RSTable::Rank1(uint64_t n) const {
   assert(n <= bv_.NumBits());
   const uint64_t block = n / 64;
   const uint64_t block_offset = n % 64;
