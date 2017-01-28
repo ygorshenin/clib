@@ -13,8 +13,11 @@ public:
 
   RSTable(const BitVector &bv);
 
-  // Returns number of set bits among the first |n|.
-  uint64_t Rank(uint64_t n) const;
+  // Returns number of zeroes among the first |n| bits.
+  uint64_t Rank0(uint64_t n) const { return n - Rank1(n); }
+
+  // Returns number of ones among the first |n| bits.
+  uint64_t Rank1(uint64_t n) const;
 
 private:
   struct SuperBlock {
