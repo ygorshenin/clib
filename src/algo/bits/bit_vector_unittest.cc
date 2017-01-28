@@ -5,8 +5,8 @@
 namespace algo {
 TEST(Bits, BitVector) {
   BitVector bits(10);
-  ASSERT_EQ(static_cast<size_t>(10), bits.Size());
-  for (size_t i = 0; i < bits.Size(); ++i)
+  ASSERT_EQ(static_cast<size_t>(10), bits.NumBits());
+  for (size_t i = 0; i < bits.NumBits(); ++i)
     ASSERT_FALSE(bits.Test(i));
 
   bits.Set(0);
