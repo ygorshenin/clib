@@ -1,8 +1,12 @@
 clib_add_library(algo
+  bits/bit_vector.h
   bits/bits.cc
   bits/bits.h
-  bits/bit_vector.h
+  bits/rs_table.cc
+  bits/rs_table.h
   graph/kuhn.h
+  math/math.cc
+  math/math.h
   numeric/matrix.h
   sequences/fenwick.h
   sequences/heap.h
@@ -19,6 +23,7 @@ clib_add_library(algo
 clib_add_unittest(algo_unittest
   bits/bit_vector_unittest.cc
   bits/bits_unittest.cc
+  bits/rs_table_unittest.cc
   graph/kuhn_unittest.cc
   numeric/matrix_unittest.cc
   sequences/fenwick_unittest.cc
