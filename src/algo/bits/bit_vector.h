@@ -12,8 +12,15 @@ public:
   const uint64_t block = bit >> 6;                                             \
   const uint64_t offset = bit & 0x3F
 
+  // For efficiency reasons, BitVector stores bits in blocks of 64
+  // bits. But there may be one more block, in case when number of
+  // bits divides by 64 - this is needed for RSTable, as Rank/Select
+  // are defined in terms of positions, and number of positions is 1+
+  // number of bits. Therefore, there should be one more zero block
+  // for the case when number of bits divides by 64, as there is a
+  // position after the last bit that is in this dummy zero block.
   BitVector(uint64_t num_bits)
-      : blocks_(((num_bits + 63) >> 6) + 1), num_bits_(num_bits) {}
+      : blocks_(((num_bits + 63) >> 6) + (num_bits % 64 == 0)), num_bits_(num_bits) {}
 
   inline void Set(uint64_t bit) {
     assert(bit < num_bits_);
