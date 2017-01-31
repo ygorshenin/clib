@@ -1,6 +1,5 @@
 clib_add_library(algo
   bits/bit_vector.h
-  bits/bits.cc
   bits/bits.h
   bits/rs_table.cc
   bits/rs_table.h
