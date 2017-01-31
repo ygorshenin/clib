@@ -11,7 +11,7 @@ inline constexpr uint64_t L(uint8_t k) { return GenL(k, 0 /* i */); }
 
 inline constexpr uint64_t H(uint8_t k) { return L(k) << (k - 1); }
 
-inline uint64_t SubBytesPopCount(uint64_t x) noexcept {
+inline uint64_t BytesPopCount(uint64_t x) noexcept {
   x = x - ((x & H(2)) >> 1);
   x = (x & 0x3333333333333333) + ((x >> 2) & 0x3333333333333333);
   x = (x + (x >> 4)) & 0x0F0F0F0F0F0F0F0F;
@@ -19,7 +19,7 @@ inline uint64_t SubBytesPopCount(uint64_t x) noexcept {
 }
 
 inline uint8_t PopCount(uint64_t x) noexcept {
-  return (SubBytesPopCount(x) * L(8)) >> 56;
+  return (BytesPopCount(x) * L(8)) >> 56;
 }
 
 inline uint8_t CeilLog(uint64_t x) noexcept {
