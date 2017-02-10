@@ -7,10 +7,10 @@
 namespace {
 void RadixSort(size_t n, const size_t *keys, size_t max_value,
                const size_t *values, size_t *result_keys) {
-  std::vector<size_t> count(max_value + 1);
+  std::vector<size_t> count(max_value);
   for (size_t i = 0; i < n; ++i)
     ++count[values[keys[i]]];
-  for (size_t i = 1; i <= max_value; ++i)
+  for (size_t i = 1; i < max_value; ++i)
     count[i] += count[i - 1];
   for (size_t i = n - 1; i < n; --i)
     result_keys[--count[values[keys[i]]]] = keys[i];
@@ -23,7 +23,7 @@ void ManberMyers(size_t n, const uint8_t *s, size_t *pos) {
     return;
 
   const size_t max_class =
-      std::max(n, static_cast<size_t>(std::numeric_limits<uint8_t>::max()));
+      std::max(n, static_cast<size_t>(std::numeric_limits<uint8_t>::max()) + 1);
 
   std::vector<size_t> npos(n);
   std::vector<size_t> classes(n);
