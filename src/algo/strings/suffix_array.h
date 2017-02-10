@@ -4,7 +4,6 @@
 #include <cstdint>
 
 namespace algo {
-
 // Sorts cyclic shifts of |s| and stores their indices in a |pos|
 // array. Size of |pos| array should be equal to |n|.
 //
@@ -23,5 +22,4 @@ void Kasai(size_t n,
            const size_t* pos,
            size_t* rank,
            size_t* lcp);
-
 }  // namespace algo

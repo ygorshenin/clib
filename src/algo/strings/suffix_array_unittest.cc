@@ -16,16 +16,32 @@ TEST(SuffixArray, Empty) {
 }
 
 TEST(SuffixArray, Simple) {
-  const char* s = "aaaa";
-  const int n = strlen(s) + 1;  // include trailing zero character
-  std::vector<size_t> pos(n);
-  ManberMyers(n, reinterpret_cast<const uint8_t*>(s), pos.data());
+  {
+    const char *s = "aaaa";
+    const int n = strlen(s) + 1; // include trailing zero character
+    std::vector<size_t> pos(n);
+    ManberMyers(n, reinterpret_cast<const uint8_t *>(s), pos.data());
 
-  ASSERT_EQ(4, pos[0]);
-  ASSERT_EQ(3, pos[1]);
-  ASSERT_EQ(2, pos[2]);
-  ASSERT_EQ(1, pos[3]);
-  ASSERT_EQ(0, pos[4]);
+    ASSERT_EQ(4, pos[0]);
+    ASSERT_EQ(3, pos[1]);
+    ASSERT_EQ(2, pos[2]);
+    ASSERT_EQ(1, pos[3]);
+    ASSERT_EQ(0, pos[4]);
+  }
+
+  {
+    const char *s = "abbbbb";
+    const int n = strlen(s);
+    std::vector<size_t> pos(n);
+    ManberMyers(n, reinterpret_cast<const uint8_t *>(s), pos.data());
+
+    ASSERT_EQ(pos[0], 0);
+    ASSERT_EQ(pos[1], 5);
+    ASSERT_EQ(pos[2], 4);
+    ASSERT_EQ(pos[3], 3);
+    ASSERT_EQ(pos[4], 2);
+    ASSERT_EQ(pos[5], 1);
+  }
 }
 
 TEST(SuffixArray, Classic) {
