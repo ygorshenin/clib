@@ -6,6 +6,8 @@ clib_add_library(algo
   graph/kuhn.h
   math/math.cc
   math/math.h
+  numeric/fft.cc
+  numeric/fft.h
   numeric/matrix.h
   sequences/fenwick.h
   sequences/heap.h
@@ -24,6 +26,7 @@ clib_add_unittest(algo_unittest
   bits/bits_unittest.cc
   bits/rs_table_unittest.cc
   graph/kuhn_unittest.cc
+  numeric/fft_unittest.cc
   numeric/matrix_unittest.cc
   sequences/fenwick_unittest.cc
   sequences/heap_unittest.cc
