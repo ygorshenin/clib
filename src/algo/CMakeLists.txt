@@ -11,6 +11,7 @@ clib_add_library(algo
   numeric/matrix.h
   sequences/fenwick.h
   sequences/heap.h
+  sequences/median.h
   sequences/merge_sort.h
   sequences/rmq.h
   sequences/segtree.h
@@ -30,6 +31,7 @@ clib_add_unittest(algo_unittest
   numeric/matrix_unittest.cc
   sequences/fenwick_unittest.cc
   sequences/heap_unittest.cc
+  sequences/median_unittest.cc
   sequences/merge_sort_unittest.cc
   sequences/rmq_unittest.cc
   sequences/segtree_unittest.cc
