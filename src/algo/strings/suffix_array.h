@@ -1,9 +1,19 @@
 #pragma once
 
+#include <string>
+#include <vector>
+
 #include <cstddef>
 #include <cstdint>
 
 namespace algo {
+// Builds suffix array for |s| and stores their indices in a |pos|
+// array. Size of |pos| array should be equal to |n|.
+//
+// Time complexity: O(n)
+void Skew(size_t n, const uint8_t* s, size_t* pos);
+void Skew(const std::string& s, std::vector<size_t>& pos);
+
 // Sorts cyclic shifts of |s| and stores their indices in a |pos|
 // array. Size of |pos| array should be equal to |n|.
 //
