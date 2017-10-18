@@ -14,6 +14,8 @@ clib_add_library(algo
   sequences/median.h
   sequences/merge_sort.h
   sequences/rmq.h
+  sequences/sat2.cc
+  sequences/sat2.h
   sequences/segtree.h
   sequences/treap.h
   strings/kmp.cc
@@ -34,6 +36,7 @@ clib_add_unittest(algo_unittest
   sequences/median_unittest.cc
   sequences/merge_sort_unittest.cc
   sequences/rmq_unittest.cc
+  sequences/sat2_unittest.cc
   sequences/segtree_unittest.cc
   sequences/treap_unittest.cc
   strings/kmp_unittest.cc

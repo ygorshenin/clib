@@ -40,14 +40,14 @@ size_t RestoreIndex(size_t n0, size_t pos) {
   return InLeftHalf(n0, pos) ? pos * 3 + 1 : (pos - n0) * 3 + 2;
 }
 
-struct TrailingZeroes {
-  TrailingZeroes(size_t n, const uint8_t* s) : n_(n), s_(s) {}
+struct SkewWrapper {
+  SkewWrapper(size_t n, const uint8_t* s) : n_(n), s_(s) {}
 
   size_t size() const { return n_; }
 
   size_t operator[](size_t i) const {
     if (i < n_)
-      return s_[i];
+      return static_cast<size_t>(s_[i]) + 1;
     assert(i < n_ + 3);
     return 0;
   }
@@ -219,7 +219,7 @@ void RawSkew(size_t n, size_t max_value, S const& s, size_t* SA) {
 
 namespace algo {
 void Skew(size_t n, const uint8_t* s, size_t* pos) {
-  RawSkew(n, 0xFF /* max_value */, TrailingZeroes(n, s), pos);
+  RawSkew(n, 0xFF /* max_value */, SkewWrapper(n, s), pos);
 }
 
 void Skew(const std::string& s, std::vector<size_t>& pos) {

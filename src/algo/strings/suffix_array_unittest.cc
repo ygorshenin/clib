@@ -34,14 +34,6 @@ TEST(Skew, Simple) {
   }
 
   {
-    const string s = "a";
-    vector<size_t> pos;
-    Skew(s, pos);
-    ASSERT_EQ(pos.size(), s.size());
-    ASSERT_EQ(pos[0], 0);
-  }
-
-  {
     const string s = "aaaa";
     vector<size_t> pos;
     Skew(s, pos);

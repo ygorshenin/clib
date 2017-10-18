@@ -4,8 +4,6 @@
 #include <cassert>
 #include <limits>
 
-#include <iostream>
-
 using namespace std;
 
 namespace algo {

@@ -41,17 +41,17 @@ T *Merge(size_t num_buffers, Buffer<T> buffers[], T *out) {
   std::vector<size_t> offsets(num_buffers, 0);
   for (size_t i = 0; i < num_buffers; ++i) {
     if (buffers[i].size_ != 0)
-      heap.push(std::make_pair(buffers[i].data_[0], i));
+      heap.Push(std::make_pair(buffers[i].data_[0], i));
   }
 
-  while (!heap.empty()) {
-    auto &elem = heap.min();
+  while (!heap.Empty()) {
+    auto &elem = heap.Min();
 
     *out++ = elem.first;
     const size_t buffer = elem.second;
     const size_t offset = ++offsets[buffer];
     if (offset == buffers[buffer].size_) {
-      heap.pop();
+      heap.Pop();
       continue;
     }
     const T &value = buffers[buffer].data_[offset];

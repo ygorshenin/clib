@@ -5,7 +5,6 @@
 #include <vector>
 
 namespace algo {
-
 template <typename T>
 class Fenwick {
  public:
@@ -50,5 +49,4 @@ class Fenwick {
 
   std::vector<T> buffer_;
 };
-
 }  // namespace algo

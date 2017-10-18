@@ -29,30 +29,30 @@ private:
 
 TEST(Heap, Smoke) {
   algo::Heap<Foo> heap;
-  ASSERT_EQ(static_cast<size_t>(0), heap.size());
-  ASSERT_TRUE(heap.empty());
+  ASSERT_EQ(static_cast<size_t>(0), heap.Size());
+  ASSERT_TRUE(heap.Empty());
 
-  heap.push(Foo(2));
-  ASSERT_EQ(static_cast<size_t>(1), heap.size());
-  ASSERT_FALSE(heap.empty());
-  ASSERT_EQ(2, heap.min().Value());
+  heap.Push(Foo(2));
+  ASSERT_EQ(static_cast<size_t>(1), heap.Size());
+  ASSERT_FALSE(heap.Empty());
+  ASSERT_EQ(2, heap.Min().Value());
 
-  heap.push(Foo(1));
-  ASSERT_EQ(static_cast<size_t>(2), heap.size());
-  ASSERT_FALSE(heap.empty());
-  ASSERT_EQ(1, heap.min().Value());
+  heap.Push(Foo(1));
+  ASSERT_EQ(static_cast<size_t>(2), heap.Size());
+  ASSERT_FALSE(heap.Empty());
+  ASSERT_EQ(1, heap.Min().Value());
 
-  heap.push(Foo(0));
-  ASSERT_EQ(static_cast<size_t>(3), heap.size());
-  ASSERT_FALSE(heap.empty());
-  ASSERT_EQ(0, heap.min().Value());
+  heap.Push(Foo(0));
+  ASSERT_EQ(static_cast<size_t>(3), heap.Size());
+  ASSERT_FALSE(heap.Empty());
+  ASSERT_EQ(0, heap.Min().Value());
 
   for (int i = 0; i < 3; ++i) {
-    Foo &foo = heap.min();
+    Foo &foo = heap.Min();
     ASSERT_EQ(i, foo.Value());
-    heap.pop();
+    heap.Pop();
   }
 
-  ASSERT_EQ(static_cast<size_t>(0), heap.size());
-  ASSERT_TRUE(heap.empty());
+  ASSERT_EQ(static_cast<size_t>(0), heap.Size());
+  ASSERT_TRUE(heap.Empty());
 }
