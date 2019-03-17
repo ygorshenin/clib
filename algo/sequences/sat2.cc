@@ -8,12 +8,10 @@ using namespace std;
 
 namespace algo {
 namespace {
-size_t GetIndex(const DNF::X& x) {
-  return 2 * x.index_ + (x.positive_ ? 0 : 1);
-}
+size_t GetIndex(const DNF::X& x) { return 2 * x.index_ + (x.positive_ ? 0 : 1); }
 
 struct SCC {
- public:
+public:
   static const size_t kInvalidIndex = numeric_limits<size_t>::max();
 
   SCC(const vector<vector<size_t>>& adj) : adj_(adj) {
@@ -37,7 +35,7 @@ struct SCC {
     return components_[i];
   }
 
- private:
+private:
   void DFS(size_t u) {
     assert(vis_[u] == kInvalidIndex);
     assert(low_[u] == kInvalidIndex);
@@ -178,7 +176,5 @@ SAT2::SAT2(const DNF& dnf) {
   }
 }
 
-void SAT2::AddImpl(const DNF::X& a, const DNF::X& b) {
-  adj_[GetIndex(a)].push_back(GetIndex(b));
-}
+void SAT2::AddImpl(const DNF::X& a, const DNF::X& b) { adj_[GetIndex(a)].push_back(GetIndex(b)); }
 }  // namespace algo

@@ -27,9 +27,5 @@ void ManberMyers(size_t n, const uint8_t* s, size_t* pos);
 // an array |rank|.
 //
 // Time complexity: O(n)
-void Kasai(size_t n,
-           const uint8_t* s,
-           const size_t* pos,
-           size_t* rank,
-           size_t* lcp);
+void Kasai(size_t n, const uint8_t* s, const size_t* pos, size_t* rank, size_t* lcp);
 }  // namespace algo

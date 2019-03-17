@@ -9,12 +9,9 @@ namespace algo {
 // Adapter from 1d array to 2d matrix.
 template <typename T>
 class MatrixAdapter {
- public:
+public:
   MatrixAdapter(size_t height, size_t width, T* buffer)
-      : height_(height),
-        width_(width),
-        size_(height_ * width_),
-        buffer_(buffer) {}
+      : height_(height), width_(width), size_(height_ * width_), buffer_(buffer) {}
 
   inline size_t height() const { return height_; }
 
@@ -24,11 +21,9 @@ class MatrixAdapter {
 
   T& operator()(size_t row, size_t col) { return buffer_[row * width_ + col]; }
 
-  const T& operator()(size_t row, size_t col) const {
-    return buffer_[row * width_ + col];
-  }
+  const T& operator()(size_t row, size_t col) const { return buffer_[row * width_ + col]; }
 
- private:
+private:
   const size_t height_;
   const size_t width_;
   const size_t size_;
@@ -48,7 +43,7 @@ void Transpose(const Matrix<T>& a, Matrix<T>& b) {
 
 template <typename T, template <typename> class Matrix>
 class MatrixTranspose {
- public:
+public:
   static const int kCLS = 64;  // cache-line size estimation
 
   MatrixTranspose(const Matrix<T>& a, Matrix<T>& b) : a_(a), b_(b) {
@@ -58,13 +53,9 @@ class MatrixTranspose {
 
   void Go() const { Go(0, a_.height(), 0, a_.width()); }
 
- private:
-  void Go(size_t min_row,
-          size_t max_row,
-          size_t min_col,
-          size_t max_col) const {
-    static const size_t kLimit =
-        std::max(kCLS / sizeof(T), static_cast<size_t>(1));
+private:
+  void Go(size_t min_row, size_t max_row, size_t min_col, size_t max_col) const {
+    static const size_t kLimit = std::max(kCLS / sizeof(T), static_cast<size_t>(1));
 
     const size_t height = max_row - min_row;
     const size_t width = max_col - min_col;

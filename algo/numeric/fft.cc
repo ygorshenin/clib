@@ -4,9 +4,8 @@
 #include <cmath>
 #include <cstddef>
 
-namespace algo
-{
-void Butterfly(const std::vector<Complex> &from, std::vector<Complex> &to) {
+namespace algo {
+void Butterfly(const std::vector<Complex>& from, std::vector<Complex>& to) {
   const size_t n = from.size();
   if (n == 0)
     return;
@@ -24,7 +23,7 @@ void Butterfly(const std::vector<Complex> &from, std::vector<Complex> &to) {
   }
 }
 
-void FFT(std::vector<Complex> &xs, bool forward) {
+void FFT(std::vector<Complex>& xs, bool forward) {
   const double kPI = acos(-1.0);
 
   const size_t n = xs.size();
@@ -51,7 +50,7 @@ void FFT(std::vector<Complex> &xs, bool forward) {
       }
     }
     if (!forward) {
-      for (auto &y : ys)
+      for (auto& y : ys)
         y *= 0.5;
     }
   }

@@ -6,7 +6,7 @@
 #include <cassert>
 
 namespace algo {
-RSTable::RSTable(const BitVector &bv) : bv_(bv) {
+RSTable::RSTable(const BitVector& bv) : bv_(bv) {
   const uint64_t num_super_blocks = (bv.NumBlocks() + 7) / 8;
   super_blocks_.resize(num_super_blocks);
 
@@ -19,7 +19,7 @@ RSTable::RSTable(const BitVector &bv) : bv_(bv) {
 
     rank += PopCount(bv.Block(i));
 
-    auto &sp = super_blocks_[super_block];
+    auto& sp = super_blocks_[super_block];
     if (super_block_offset == 0) {
       sp.start_rank_ = rank;
     } else {
@@ -38,7 +38,7 @@ uint64_t RSTable::Rank1(uint64_t n) const {
   const uint64_t super_block_offset = block % 8 - 1;
 
   assert(super_block < super_blocks_.size());
-  const auto &sb = super_blocks_[super_block];
+  const auto& sb = super_blocks_[super_block];
 
   uint64_t rank = sb.start_rank_;
 
@@ -49,8 +49,7 @@ uint64_t RSTable::Rank1(uint64_t n) const {
   // to 8, so offset will be (-1 + 8) * 9 = 63.  As we are assuming
   // here that only first 63 bits of other_ranks_ are busy, zero will
   // be added to the rank.
-  const uint64_t offset =
-      (super_block_offset + ((super_block_offset >> 60) & 8)) * 9;
+  const uint64_t offset = (super_block_offset + ((super_block_offset >> 60) & 8)) * 9;
   rank += (sb.other_ranks_ >> offset) & 0x1FF;
 
   const uint64_t mask = (static_cast<uint64_t>(1) << block_offset) - 1;
@@ -58,4 +57,4 @@ uint64_t RSTable::Rank1(uint64_t n) const {
 
   return rank;
 }
-} // namespace algo
+}  // namespace algo

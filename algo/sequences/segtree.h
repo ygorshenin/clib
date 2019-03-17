@@ -10,21 +10,19 @@ Monoid Mappend(const Monoid& lhs, const Monoid& rhs);
 
 template <typename Monoid>
 class SegTree {
- public:
+public:
   SegTree(size_t size) : data_(2 * Ceil2Pow(size)), size_(size) {}
 
   size_t size() const { return size_; }
 
   void Set(size_t index, const Monoid& m) {
     assert(index < size());
-    SetImpl(
-        0 /* pos */, 0 /* left_bound */, size() /* right_bound */, index, m);
+    SetImpl(0 /* pos */, 0 /* left_bound */, size() /* right_bound */, index, m);
   }
 
   const Monoid& Get(size_t index) const {
     assert(index < size());
-    return GetImpl(
-        0 /* pos */, 0 /* left_bound */, size() /* right_bound */, index);
+    return GetImpl(0 /* pos */, 0 /* left_bound */, size() /* right_bound */, index);
   }
 
   Monoid Get(size_t from, size_t to) const {
@@ -32,25 +30,13 @@ class SegTree {
     assert(to <= size());
     if (from == to)
       return Monoid();
-    return GetImpl(
-        0 /* pos */, 0 /* left_bound */, size() /* right_bound */, from, to);
+    return GetImpl(0 /* pos */, 0 /* left_bound */, size() /* right_bound */, from, to);
   }
 
- private:
-  void SetImpl(size_t pos,
-               size_t left_bound,
-               size_t right_bound,
-               size_t index,
-               const Monoid& m);
-  const Monoid& GetImpl(size_t pos,
-                        size_t left_bound,
-                        size_t right_bound,
-                        size_t index) const;
-  Monoid GetImpl(size_t pos,
-                 size_t left_bound,
-                 size_t right_bound,
-                 size_t from,
-                 size_t to) const;
+private:
+  void SetImpl(size_t pos, size_t left_bound, size_t right_bound, size_t index, const Monoid& m);
+  const Monoid& GetImpl(size_t pos, size_t left_bound, size_t right_bound, size_t index) const;
+  Monoid GetImpl(size_t pos, size_t left_bound, size_t right_bound, size_t from, size_t to) const;
 
   static size_t Ceil2Pow(size_t n) {
     size_t p = 1;
@@ -67,11 +53,7 @@ class SegTree {
 };
 
 template <typename Monoid>
-void SegTree<Monoid>::SetImpl(size_t pos,
-                              size_t left_bound,
-                              size_t right_bound,
-                              size_t index,
-                              const Monoid& m) {
+void SegTree<Monoid>::SetImpl(size_t pos, size_t left_bound, size_t right_bound, size_t index, const Monoid& m) {
   assert(left_bound < right_bound);
   if (left_bound + 1 == right_bound) {
     assert(left_bound == index);
@@ -89,10 +71,7 @@ void SegTree<Monoid>::SetImpl(size_t pos,
 }
 
 template <typename Monoid>
-const Monoid& SegTree<Monoid>::GetImpl(size_t pos,
-                                       size_t left_bound,
-                                       size_t right_bound,
-                                       size_t index) const {
+const Monoid& SegTree<Monoid>::GetImpl(size_t pos, size_t left_bound, size_t right_bound, size_t index) const {
   assert(left_bound < right_bound);
   if (left_bound + 1 == right_bound) {
     assert(index == left_bound);
@@ -105,11 +84,7 @@ const Monoid& SegTree<Monoid>::GetImpl(size_t pos,
 }
 
 template <typename Monoid>
-Monoid SegTree<Monoid>::GetImpl(size_t pos,
-                                size_t left_bound,
-                                size_t right_bound,
-                                size_t from,
-                                size_t to) const {
+Monoid SegTree<Monoid>::GetImpl(size_t pos, size_t left_bound, size_t right_bound, size_t from, size_t to) const {
   assert(left_bound < right_bound);
   if (from >= right_bound || to <= left_bound)
     return Monoid();

@@ -6,7 +6,7 @@ namespace algo {
 // movable.
 template <typename T>
 class Heap {
- public:
+public:
   Heap() = default;
 
   template <typename V>
@@ -25,7 +25,7 @@ class Heap {
   void OnValueDecreased(size_t pos);
   void OnValueIncreased(size_t pos);
 
- private:
+private:
   static size_t LeftChild(size_t pos) { return 2 * pos + 1; }
   static size_t RightChild(size_t pos) { return 2 * pos + 2; }
   static size_t Parent(size_t pos) { return (pos - 1) / 2; }
@@ -75,13 +75,11 @@ void Heap<T>::OnValueIncreased(size_t pos) {
     return;
   }
 
-  if (!(buffer_[left_child] < buffer_[pos]) &&
-      !(buffer_[right_child] < buffer_[pos])) {
+  if (!(buffer_[left_child] < buffer_[pos]) && !(buffer_[right_child] < buffer_[pos])) {
     return;
   }
 
-  if (!(buffer_[pos] < buffer_[left_child]) &&
-      !(buffer_[right_child] < buffer_[left_child])) {
+  if (!(buffer_[pos] < buffer_[left_child]) && !(buffer_[right_child] < buffer_[left_child])) {
     std::swap(buffer_[pos], buffer_[left_child]);
     OnValueIncreased(left_child);
     return;

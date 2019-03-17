@@ -17,4 +17,4 @@ bool IsPrime(uint64_t a) {
 
   return true;
 }
-} // namespace algo
+}  // namespace algo

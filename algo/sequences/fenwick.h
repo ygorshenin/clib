@@ -7,7 +7,7 @@
 namespace algo {
 template <typename T>
 class Fenwick {
- public:
+public:
   Fenwick(size_t size) : buffer_(size) {}
 
   // Adds |value| to an element on a position |index|.
@@ -43,7 +43,7 @@ class Fenwick {
 
   inline size_t size() const { return buffer_.size(); }
 
- private:
+private:
   static inline size_t F(size_t index) { return index & (index + 1); }
   static inline size_t G(size_t index) { return index | (index + 1); }
 

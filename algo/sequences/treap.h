@@ -8,11 +8,15 @@
 #include <utility>
 
 namespace algo {
-template <typename Key, typename Value, typename Priority> struct TreapNode {
+template <typename Key, typename Value, typename Priority>
+struct TreapNode {
   template <typename K, typename V, typename P>
-  TreapNode(K &&k, V &&v, P &&p)
-      : key(std::forward<K>(k)), value(std::forward<V>(v)),
-        priority(std::forward<P>(p)), left(nullptr), right(nullptr) {}
+  TreapNode(K&& k, V&& v, P&& p)
+      : key(std::forward<K>(k)),
+        value(std::forward<V>(v)),
+        priority(std::forward<P>(p)),
+        left(nullptr),
+        right(nullptr) {}
 
   ~TreapNode() {
     delete left;
@@ -21,7 +25,7 @@ template <typename Key, typename Value, typename Priority> struct TreapNode {
 
   inline void Detach() { left = right = nullptr; }
 
-  void Print(std::ostream &os, int offset) {
+  void Print(std::ostream& os, int offset) {
     if (right)
       right->Print(os, offset + 1);
 
@@ -37,16 +41,14 @@ template <typename Key, typename Value, typename Priority> struct TreapNode {
   Value value;
   Priority priority;
 
-  TreapNode<Key, Value, Priority> *left;
-  TreapNode<Key, Value, Priority> *right;
+  TreapNode<Key, Value, Priority>* left;
+  TreapNode<Key, Value, Priority>* right;
 };
 
 template <typename Key, typename Priority>
 struct TreapNode<Key, void, Priority> {
   template <typename K, typename P>
-  TreapNode(K &&k, P &&p)
-      : key(std::forward<K>(k)), priority(std::forward<P>(p)), left(nullptr),
-        right(nullptr) {}
+  TreapNode(K&& k, P&& p) : key(std::forward<K>(k)), priority(std::forward<P>(p)), left(nullptr), right(nullptr) {}
 
   ~TreapNode() {
     delete left;
@@ -55,7 +57,7 @@ struct TreapNode<Key, void, Priority> {
 
   inline void Detach() { left = right = nullptr; }
 
-  void Print(std::ostream &os, int offset) {
+  void Print(std::ostream& os, int offset) {
     if (right)
       right->Print(os, offset + 1);
 
@@ -70,35 +72,36 @@ struct TreapNode<Key, void, Priority> {
   Key key;
   Priority priority;
 
-  TreapNode<Key, void, Priority> *left;
-  TreapNode<Key, void, Priority> *right;
+  TreapNode<Key, void, Priority>* left;
+  TreapNode<Key, void, Priority>* right;
 };
 
-template <typename Key, typename Value, typename Priority> struct Treap {
+template <typename Key, typename Value, typename Priority>
+struct Treap {
   using Node = TreapNode<Key, Value, Priority>;
 
   Treap() : root_(nullptr), size_(0) {}
 
   ~Treap() { delete root_; }
 
-  template <typename K, typename P> void Insert(K &&k, P &&p) {
-    Node *node = new Node(std::forward<K>(k), std::forward<P>(p));
+  template <typename K, typename P>
+  void Insert(K&& k, P&& p) {
+    Node* node = new Node(std::forward<K>(k), std::forward<P>(p));
     Erase(node->key);
     root_ = Insert(root_, node);
     ++size_;
   }
 
   template <typename K, typename V, typename P>
-  void Insert(K &&k, V &&v, P &&p) {
-    Node *node =
-        new Node(std::forward<K>(k), std::forward<V>(v), std::forward<P>(p));
+  void Insert(K&& k, V&& v, P&& p) {
+    Node* node = new Node(std::forward<K>(k), std::forward<V>(v), std::forward<P>(p));
     Erase(node->key);
     root_ = Insert(root_, node);
     ++size_;
   }
 
-  bool Erase(const Key &key) {
-    Node **pos = Lookup(key);
+  bool Erase(const Key& key) {
+    Node** pos = Lookup(key);
     std::unique_ptr<Node> node(*pos);
     if (!node)
       return false;
@@ -108,19 +111,19 @@ template <typename Key, typename Value, typename Priority> struct Treap {
     return true;
   }
 
-  bool Contains(const Key &key) const {
-    Node *const *pos = Lookup(key);
+  bool Contains(const Key& key) const {
+    Node* const* pos = Lookup(key);
     return *pos != nullptr;
   }
 
-  Node &Get(const Key &key) {
-    Node **pos = Lookup(key);
+  Node& Get(const Key& key) {
+    Node** pos = Lookup(key);
     assert(*pos != nullptr);
     return **pos;
   }
 
-  const Key &Get(const Key &key) const {
-    Node **pos = Lookup(key);
+  const Key& Get(const Key& key) const {
+    Node** pos = Lookup(key);
     assert(*pos != nullptr);
     return **pos;
   }
@@ -129,32 +132,32 @@ template <typename Key, typename Value, typename Priority> struct Treap {
 
   inline bool Empty() const { return Size() == 0; }
 
-  void Print(std::ostream &os) const {
+  void Print(std::ostream& os) const {
     if (root_)
       root_->Print(os, 0 /* offset */);
   }
 
-#define LOOKUP(cur, root)                                                      \
-  auto cur = &root;                                                            \
-  while (*cur && !((*cur)->key == key)) {                                      \
-    if (key < (*cur)->key)                                                     \
-      cur = &(*cur)->left;                                                     \
-    else                                                                       \
-      cur = &(*cur)->right;                                                    \
+#define LOOKUP(cur, root)                 \
+  auto cur = &root;                       \
+  while (*cur && !((*cur)->key == key)) { \
+    if (key < (*cur)->key)                \
+      cur = &(*cur)->left;                \
+    else                                  \
+      cur = &(*cur)->right;               \
   }
 
-  Node *const *Lookup(const Key &key) const {
+  Node* const* Lookup(const Key& key) const {
     LOOKUP(cur, root_);
     return cur;
   }
 
-  Node **Lookup(const Key &key) {
+  Node** Lookup(const Key& key) {
     LOOKUP(cur, root_);
     return cur;
   }
 #undef LOOKUP
 
-  static Node *Insert(Node *root, Node *node) {
+  static Node* Insert(Node* root, Node* node) {
     if (!root)
       return node;
     if (node->priority < root->priority) {
@@ -169,7 +172,7 @@ template <typename Key, typename Value, typename Priority> struct Treap {
     return root;
   }
 
-  static void Split(Node *root, const Key &key, Node **left, Node **right) {
+  static void Split(Node* root, const Key& key, Node** left, Node** right) {
     if (!root) {
       *left = *right = nullptr;
       return;
@@ -183,7 +186,7 @@ template <typename Key, typename Value, typename Priority> struct Treap {
     }
   }
 
-  static Node *Merge(Node *left, Node *right) {
+  static Node* Merge(Node* left, Node* right) {
     if (!left)
       return right;
     if (!right)
@@ -196,7 +199,7 @@ template <typename Key, typename Value, typename Priority> struct Treap {
     return right;
   }
 
-  Node *root_;
+  Node* root_;
   size_t size_;
 };
-} // namespace algo
+}  // namespace algo

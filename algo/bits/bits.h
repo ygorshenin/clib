@@ -18,15 +18,13 @@ inline uint64_t BytesPopCount(uint64_t x) noexcept {
   return x;
 }
 
-inline uint8_t PopCount(uint64_t x) noexcept {
-  return (BytesPopCount(x) * L(8)) >> 56;
-}
+inline uint8_t PopCount(uint64_t x) noexcept { return (BytesPopCount(x) * L(8)) >> 56; }
 
 inline uint8_t CeilLog(uint64_t x) noexcept {
-#define CHECK_RSH(x, msb, offset)                                              \
-  if (x >> offset) {                                                           \
-    x >>= offset;                                                              \
-    msb += offset;                                                             \
+#define CHECK_RSH(x, msb, offset) \
+  if (x >> offset) {              \
+    x >>= offset;                 \
+    msb += offset;                \
   }
 
   uint8_t msb = 0;
@@ -40,4 +38,4 @@ inline uint8_t CeilLog(uint64_t x) noexcept {
 
   return msb;
 }
-} // namespace algo
+}  // namespace algo

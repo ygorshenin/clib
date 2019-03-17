@@ -9,11 +9,12 @@
 namespace algo {
 // This is a wrapper around raw memory buffer. Used to hold start
 // address and number of elements.
-template <typename T> struct Buffer {
+template <typename T>
+struct Buffer {
   Buffer() : data_(nullptr), size_(0) {}
-  Buffer(T *data, size_t size) : data_(data), size_(size) {}
+  Buffer(T* data, size_t size) : data_(data), size_(size) {}
 
-  const T *data_;
+  const T* data_;
   const size_t size_;
 };
 
@@ -34,7 +35,7 @@ struct SortOptions {
 // Merges |num_buffers| buffers to out, returns a pointer to the end
 // of the sorted sequence.
 template <typename T>
-T *Merge(size_t num_buffers, Buffer<T> buffers[], T *out) {
+T* Merge(size_t num_buffers, Buffer<T> buffers[], T* out) {
   using Value = std::pair<T /* elem */, size_t /* buffer */>;
   Heap<Value> heap;
 
@@ -45,7 +46,7 @@ T *Merge(size_t num_buffers, Buffer<T> buffers[], T *out) {
   }
 
   while (!heap.Empty()) {
-    auto &elem = heap.Min();
+    auto& elem = heap.Min();
 
     *out++ = elem.first;
     const size_t buffer = elem.second;
@@ -54,7 +55,7 @@ T *Merge(size_t num_buffers, Buffer<T> buffers[], T *out) {
       heap.Pop();
       continue;
     }
-    const T &value = buffers[buffer].data_[offset];
+    const T& value = buffers[buffer].data_[offset];
     if (value <= elem.first) {
       elem.first = value;
     } else {
@@ -68,19 +69,16 @@ T *Merge(size_t num_buffers, Buffer<T> buffers[], T *out) {
 // An external-memory merge-sort algorithm. Not quite efficient and
 // can be beat by std::sort() or even std::stable_sort() algorithms.
 template <typename T>
-void MergeSort(size_t n, T *data, const SortOptions &options = SortOptions()) {
-  const size_t cache_line_size =
-      std::max(options.cache_line_size_, static_cast<size_t>(1));
+void MergeSort(size_t n, T* data, const SortOptions& options = SortOptions()) {
+  const size_t cache_line_size = std::max(options.cache_line_size_, static_cast<size_t>(1));
   const size_t cache_size = std::max(options.cache_size_, cache_line_size);
 
   // Initial sequence is initially split on runs |run_length| size
   // each.
-  const size_t run_length = std::max((cache_size + sizeof(T) - 1) / sizeof(T),
-                                     static_cast<size_t>(1));
+  const size_t run_length = std::max((cache_size + sizeof(T) - 1) / sizeof(T), static_cast<size_t>(1));
 
   // The number of runs to be merged at each Merge() call.
-  const size_t runs_to_merge = std::max(
-      options.cache_size_ / (2 * cache_line_size), static_cast<size_t>(2));
+  const size_t runs_to_merge = std::max(options.cache_size_ / (2 * cache_line_size), static_cast<size_t>(2));
 
   std::vector<Buffer<T>> curRuns;
   size_t offset = 0;
@@ -95,17 +93,17 @@ void MergeSort(size_t n, T *data, const SortOptions &options = SortOptions()) {
   // In-place merging is a quite complex algorithm, so it's much
   // easier to just create an auxiliary buffer.
   std::vector<T> nxtBuffer(n);
-  T *curData = data;
-  T *nxtData = nxtBuffer.data();
+  T* curData = data;
+  T* nxtData = nxtBuffer.data();
 
   while (curRuns.size() > 1) {
     std::vector<Buffer<T>> nxtRuns;
 
     size_t i = 0;
-    T *start = nxtData;
+    T* start = nxtData;
     while (i < curRuns.size()) {
       const size_t num_runs = std::min(runs_to_merge, curRuns.size() - i);
-      T *end = Merge(num_runs, &curRuns[i], start);
+      T* end = Merge(num_runs, &curRuns[i], start);
 
       nxtRuns.emplace_back(start, end - start);
       start = end;
@@ -118,4 +116,4 @@ void MergeSort(size_t n, T *data, const SortOptions &options = SortOptions()) {
   if (curData == nxtBuffer.data())
     std::copy(nxtBuffer.begin(), nxtBuffer.end(), data);
 }
-} // namespace algo
+}  // namespace algo

@@ -36,30 +36,24 @@ struct DNF {
   std::vector<Disjunction> ds_;
 };
 
-inline DNF::X operator!(const DNF::X& x) {
-  return {x.index_, !x.positive_};
-}
+inline DNF::X operator!(const DNF::X& x) { return {x.index_, !x.positive_}; }
 
-inline DNF::Disjunction operator|(const DNF::X& lhs, const DNF::X& rhs) {
-  return {lhs, rhs};
-}
+inline DNF::Disjunction operator|(const DNF::X& lhs, const DNF::X& rhs) { return {lhs, rhs}; }
 
-inline DNF::Disjunction operator>=(const DNF::X& lhs, const DNF::X& rhs) {
-  return {!lhs, rhs};
-}
+inline DNF::Disjunction operator>=(const DNF::X& lhs, const DNF::X& rhs) { return {!lhs, rhs}; }
 
 std::ostream& operator<<(std::ostream& os, const DNF::X& x);
 std::ostream& operator<<(std::ostream& os, const DNF::Disjunction& d);
 
 class SAT2 {
- public:
+public:
   SAT2(const DNF& dnf);
 
   bool Unsat() const { return unsat_; }
 
   const std::vector<bool>& Assignment() const { return assignment_; }
 
- private:
+private:
   void AddImpl(const DNF::X& a, const DNF::X& b);
 
   std::vector<std::vector<size_t>> adj_;

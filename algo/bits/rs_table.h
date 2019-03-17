@@ -11,7 +11,7 @@ class RSTable {
 public:
   static_assert(CHAR_BIT == 8, "");
 
-  RSTable(const BitVector &bv);
+  RSTable(const BitVector& bv);
 
   // Returns number of zeroes among the first |n| bits.
   uint64_t Rank0(uint64_t n) const { return n - Rank1(n); }
@@ -25,7 +25,7 @@ private:
     uint64_t other_ranks_ = 0;
   };
 
-  const BitVector &bv_;
+  const BitVector& bv_;
   std::vector<SuperBlock> super_blocks_;
 };
-} // namespace algo
+}  // namespace algo

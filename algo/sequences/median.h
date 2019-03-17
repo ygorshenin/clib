@@ -7,7 +7,7 @@
 
 namespace algo {
 template <typename T>
-const T &GetKth(const T *a, size_t lena, const T *b, size_t lenb, size_t k) {
+const T& GetKth(const T* a, size_t lena, const T* b, size_t lenb, size_t k) {
   assert(std::is_sorted(a, a + lena));
   assert(std::is_sorted(b, b + lenb));
   assert(k < lena + lenb);
@@ -31,7 +31,7 @@ const T &GetKth(const T *a, size_t lena, const T *b, size_t lenb, size_t k) {
 }
 
 template <typename T>
-const T &GetKth(const std::vector<T> &a, const std::vector<T> &b, size_t k) {
+const T& GetKth(const std::vector<T>& a, const std::vector<T>& b, size_t k) {
   return GetKth(a.data(), a.size(), b.data(), b.size(), k);
 }
-} // namespace algo
+}  // namespace algo
