@@ -16,8 +16,8 @@ int main() {
   algo::MergeSort(data.size(), data.data(), algo::SortOptions(6144 * 1024, 64));
 
   if (!std::is_sorted(data.begin(), data.end())) {
-      fprintf(stderr, "Merge sort error\n");
-      return 1;
+    fprintf(stderr, "Merge sort error\n");
+    return 1;
   }
   return 0;
 }
