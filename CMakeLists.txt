@@ -7,14 +7,11 @@ option(USE_ASAN "Build application with clang Address Sanitizer" OFF)
 find_package(GTest REQUIRED)
 find_package(Threads REQUIRED)
 
-set(PROJECT_SOURCE_DIR src)
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})
-
 add_compile_options(
   "-Wall"
   "-pedantic"
-  "-std=c++11"
-  )
+  "-std=c++1z"
+)
 
 if (USE_ASAN)
   message("Address Sanitizer is enabled.")
@@ -25,9 +22,8 @@ if (USE_ASAN)
 endif()
 
 include_directories(
-  ${PROJECT_SOURCE_DIR}
   ${GTEST_INCLUDE_DIRS}
-  )
+)
 
 function(clib_add_executable executable)
   add_executable(${executable} ${ARGN})
@@ -41,11 +37,12 @@ function(clib_add_unittest executable)
   target_link_libraries(${executable}
     ${GTEST_BOTH_LIBRARIES}
     ${CMAKE_THREAD_LIBS_INIT}
-    )
+  )
 endfunction()
 
 function(clib_add_library library)
-  add_library(${library} SHARED ${ARGN})
+  add_library(${library} STATIC ${ARGN})
 endfunction()
 
-add_subdirectory(${PROJECT_SOURCE_DIR})
+add_subdirectory(algo)
+add_subdirectory(benchmarks)

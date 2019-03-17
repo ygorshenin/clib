@@ -1,0 +1,48 @@
+include_directories(BEFORE .)
+
+clib_add_library(algo
+  bits/bit_vector.h
+  bits/bits.h
+  bits/rs_table.cc
+  bits/rs_table.h
+  graph/kuhn.h
+  math/math.cc
+  math/math.h
+  numeric/fft.cc
+  numeric/fft.h
+  numeric/matrix.h
+  sequences/fenwick.h
+  sequences/heap.h
+  sequences/median.h
+  sequences/merge_sort.h
+  sequences/rmq.h
+  sequences/sat2.cc
+  sequences/sat2.h
+  sequences/segtree.h
+  sequences/treap.h
+  strings/kmp.cc
+  strings/kmp.h
+  strings/suffix_array.cc
+  strings/suffix_array.h
+)
+
+clib_add_unittest(algo_unittest
+  bits/bit_vector_unittest.cc
+  bits/bits_unittest.cc
+  bits/rs_table_unittest.cc
+  graph/kuhn_unittest.cc
+  numeric/fft_unittest.cc
+  numeric/matrix_unittest.cc
+  sequences/fenwick_unittest.cc
+  sequences/heap_unittest.cc
+  sequences/median_unittest.cc
+  sequences/merge_sort_unittest.cc
+  sequences/rmq_unittest.cc
+  sequences/sat2_unittest.cc
+  sequences/segtree_unittest.cc
+  sequences/treap_unittest.cc
+  strings/kmp_unittest.cc
+  strings/suffix_array_unittest.cc
+)
+
+target_link_libraries(algo_unittest algo)
