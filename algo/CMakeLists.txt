@@ -12,6 +12,8 @@ clib_add_library(algo
   numeric/fft.h
   numeric/matrix.h
   sequences/fenwick.h
+  sequences/dsu.cc
+  sequences/dsu.h
   sequences/heap.h
   sequences/median.h
   sequences/merge_sort.h
@@ -33,6 +35,7 @@ clib_add_unittest(algo_unittest
   graph/kuhn_unittest.cc
   numeric/fft_unittest.cc
   numeric/matrix_unittest.cc
+  sequences/dsu_unittest.cc
   sequences/fenwick_unittest.cc
   sequences/heap_unittest.cc
   sequences/median_unittest.cc
