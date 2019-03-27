@@ -8,11 +8,13 @@ using namespace std;
 
 namespace algo {
 namespace {
+enum class Value { Undefined, False, True };
+
 size_t GetIndex(const DNF::X& x) { return 2 * x.m_index + (x.m_positive ? 0 : 1); }
 
 struct SCC {
 public:
-  static const size_t kInvalidIndex = numeric_limits<size_t>::max();
+  inline static constexpr size_t kInvalidIndex = numeric_limits<size_t>::max();
 
   SCC(const vector<vector<size_t>>& adj) : m_adj(adj) {
     const auto n = m_adj.size();
@@ -28,10 +30,10 @@ public:
     assert(m_stack.empty());
   }
 
-  size_t size() const { return m_components.size(); }
+  size_t Size() const { return m_components.size(); }
 
   const vector<size_t>& operator[](size_t i) const {
-    assert(i < size());
+    assert(i < Size());
     return m_components[i];
   }
 
@@ -90,20 +92,6 @@ private:
 
   vector<vector<size_t>> m_components;
 };
-
-// static
-const size_t SCC::kInvalidIndex;
-
-enum class Value { Undefined, False, True };
-
-void FillFalse(const vector<size_t>& component, vector<Value>& values) {
-  assert(!component.empty());
-  if (values[component.front()] != Value::Undefined)
-    return;
-
-  for (const auto u : component)
-    values[u] = Value::False;
-}
 }  // namespace
 
 ostream& operator<<(ostream& os, const DNF::X& x) {
@@ -127,7 +115,7 @@ SAT2::SAT2(const DNF& dnf) {
     maxIndex = max(maxIndex, d.m_rhs.m_index);
   }
 
-  size_t n = dnf.Empty() ? 0 : maxIndex + 1;
+  const size_t n = dnf.Empty() ? 0 : maxIndex + 1;
 
   m_adj.resize(2 * n);
   for (const auto& d : dnf.m_ds) {
@@ -137,33 +125,26 @@ SAT2::SAT2(const DNF& dnf) {
 
   m_assignment.assign(n, false);
 
-  vector<size_t> componentIds(2 * n, SCC::kInvalidIndex);
-
   SCC scc{m_adj};
-  for (size_t i = 0; i < scc.size(); ++i) {
-    for (const auto u : scc[i])
-      componentIds[u] = i;
-  }
-
-  for (size_t i = 0; i < componentIds.size(); i += 2) {
-    if (componentIds[i] == componentIds[i + 1]) {
-      m_unsat = true;
-      return;
-    }
-  }
 
   vector<Value> values(2 * n, Value::Undefined);
-  for (size_t i = 0; i < scc.size(); ++i) {
+  for (size_t i = 0; i < scc.Size(); ++i) {
     const auto& component = scc[i];
     assert(!component.empty());
 
     const auto u = component.front();
-    if (values[u] != Value::Undefined && values[u ^ 1] != Value::Undefined)
+    assert((values[u] == Value::Undefined) == (values[u ^ 1] == Value::Undefined));
+
+    if (values[u] != Value::Undefined)
       continue;
 
     for (const auto u : component) {
+      if (values[u] != Value::Undefined) {
+        m_unsat = true;
+        return;
+      }
       values[u] = Value::True;
-      FillFalse(scc[componentIds[u ^ 1]], values);
+      values[u ^ 1] = Value::False;
     }
   }
 
