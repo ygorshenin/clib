@@ -8,55 +8,55 @@ using namespace std;
 
 namespace algo {
 namespace {
-size_t GetIndex(const DNF::X& x) { return 2 * x.index_ + (x.positive_ ? 0 : 1); }
+size_t GetIndex(const DNF::X& x) { return 2 * x.m_index + (x.m_positive ? 0 : 1); }
 
 struct SCC {
 public:
   static const size_t kInvalidIndex = numeric_limits<size_t>::max();
 
-  SCC(const vector<vector<size_t>>& adj) : adj_(adj) {
-    const auto n = adj_.size();
-    vis_.assign(n, kInvalidIndex);
-    low_.assign(n, kInvalidIndex);
-    onStack_.assign(n, false);
+  SCC(const vector<vector<size_t>>& adj) : m_adj(adj) {
+    const auto n = m_adj.size();
+    m_vis.assign(n, kInvalidIndex);
+    m_low.assign(n, kInvalidIndex);
+    m_onStack.assign(n, false);
 
     for (size_t u = 0; u < n; ++u) {
-      assert(stack_.empty());
-      if (vis_[u] == kInvalidIndex)
+      assert(m_stack.empty());
+      if (m_vis[u] == kInvalidIndex)
         DFS(u);
     }
-    assert(stack_.empty());
+    assert(m_stack.empty());
   }
 
-  size_t size() const { return components_.size(); }
+  size_t size() const { return m_components.size(); }
 
   const vector<size_t>& operator[](size_t i) const {
     assert(i < size());
-    return components_[i];
+    return m_components[i];
   }
 
 private:
   void DFS(size_t u) {
-    assert(vis_[u] == kInvalidIndex);
-    assert(low_[u] == kInvalidIndex);
+    assert(m_vis[u] == kInvalidIndex);
+    assert(m_low[u] == kInvalidIndex);
 
-    vis_[u] = low_[u] = index_++;
+    m_vis[u] = m_low[u] = m_index++;
     Push(u);
 
-    for (const auto v : adj_[u]) {
-      if (vis_[v] == kInvalidIndex) {
+    for (const auto v : m_adj[u]) {
+      if (m_vis[v] == kInvalidIndex) {
         DFS(v);
-        low_[u] = min(low_[u], low_[v]);
-      } else if (onStack_[v]) {
-        low_[u] = min(low_[u], vis_[v]);
+        m_low[u] = min(m_low[u], m_low[v]);
+      } else if (m_onStack[v]) {
+        m_low[u] = min(m_low[u], m_vis[v]);
       }
     }
 
-    if (low_[u] == vis_[u]) {
-      assert(!stack_.empty());
+    if (m_low[u] == m_vis[u]) {
+      assert(!m_stack.empty());
 
-      components_.emplace_back();
-      auto& component = components_.back();
+      m_components.emplace_back();
+      auto& component = m_components.back();
 
       size_t v;
       do {
@@ -67,114 +67,114 @@ private:
   }
 
   void Push(size_t u) {
-    assert(!onStack_[u]);
-    onStack_[u] = true;
-    stack_.push_back(u);
+    assert(!m_onStack[u]);
+    m_onStack[u] = true;
+    m_stack.push_back(u);
   }
 
   size_t Pop() {
-    assert(!stack_.empty());
-    const auto u = stack_.back();
-    stack_.pop_back();
-    onStack_[u] = false;
+    assert(!m_stack.empty());
+    const auto u = m_stack.back();
+    m_stack.pop_back();
+    m_onStack[u] = false;
     return u;
   }
 
-  const vector<vector<size_t>>& adj_;
-  vector<size_t> vis_;
-  vector<size_t> low_;
-  vector<bool> onStack_;
-  vector<size_t> stack_;
+  const vector<vector<size_t>>& m_adj;
+  vector<size_t> m_vis;
+  vector<size_t> m_low;
+  vector<bool> m_onStack;
+  vector<size_t> m_stack;
 
-  size_t index_ = 0;
+  size_t m_index = 0;
 
-  vector<vector<size_t>> components_;
+  vector<vector<size_t>> m_components;
 };
 
 // static
 const size_t SCC::kInvalidIndex;
 
-enum Value { VALUE_UNDEFINED, VALUE_FALSE, VALUE_TRUE };
+enum class Value { Undefined, False, True };
 
 void FillFalse(const vector<size_t>& component, vector<Value>& values) {
   assert(!component.empty());
-  if (values[component.front()] != VALUE_UNDEFINED)
+  if (values[component.front()] != Value::Undefined)
     return;
 
   for (const auto u : component)
-    values[u] = VALUE_FALSE;
+    values[u] = Value::False;
 }
 }  // namespace
 
 ostream& operator<<(ostream& os, const DNF::X& x) {
-  if (x.positive_)
+  if (x.m_positive)
     os << "x";
   else
     os << "~x";
-  os << x.index_;
+  os << x.m_index;
   return os;
 }
 
 ostream& operator<<(ostream& os, const DNF::Disjunction& d) {
-  os << d.lhs_ << " or " << d.rhs_;
+  os << d.m_lhs << " or " << d.m_rhs;
   return os;
 }
 
 SAT2::SAT2(const DNF& dnf) {
-  size_t max_index = 0;
-  for (const auto& d : dnf.ds_) {
-    max_index = max(max_index, d.lhs_.index_);
-    max_index = max(max_index, d.rhs_.index_);
+  size_t maxIndex = 0;
+  for (const auto& d : dnf.m_ds) {
+    maxIndex = max(maxIndex, d.m_lhs.m_index);
+    maxIndex = max(maxIndex, d.m_rhs.m_index);
   }
 
-  size_t n = dnf.Empty() ? 0 : max_index + 1;
+  size_t n = dnf.Empty() ? 0 : maxIndex + 1;
 
-  adj_.resize(2 * n);
-  for (const auto& d : dnf.ds_) {
-    AddImpl(!d.lhs_, d.rhs_);
-    AddImpl(!d.rhs_, d.lhs_);
+  m_adj.resize(2 * n);
+  for (const auto& d : dnf.m_ds) {
+    AddImpl(!d.m_lhs, d.m_rhs);
+    AddImpl(!d.m_rhs, d.m_lhs);
   }
 
-  assignment_.assign(n, false);
+  m_assignment.assign(n, false);
 
-  vector<size_t> component_ids(2 * n, SCC::kInvalidIndex);
+  vector<size_t> componentIds(2 * n, SCC::kInvalidIndex);
 
-  SCC scc(adj_);
+  SCC scc{m_adj};
   for (size_t i = 0; i < scc.size(); ++i) {
     for (const auto u : scc[i])
-      component_ids[u] = i;
+      componentIds[u] = i;
   }
 
-  for (size_t i = 0; i < component_ids.size(); i += 2) {
-    if (component_ids[i] == component_ids[i + 1]) {
-      unsat_ = true;
+  for (size_t i = 0; i < componentIds.size(); i += 2) {
+    if (componentIds[i] == componentIds[i + 1]) {
+      m_unsat = true;
       return;
     }
   }
 
-  vector<Value> values(2 * n, VALUE_UNDEFINED);
+  vector<Value> values(2 * n, Value::Undefined);
   for (size_t i = 0; i < scc.size(); ++i) {
     const auto& component = scc[i];
     assert(!component.empty());
 
     const auto u = component.front();
-    if (values[u] != VALUE_UNDEFINED && values[u ^ 1] != VALUE_UNDEFINED)
+    if (values[u] != Value::Undefined && values[u ^ 1] != Value::Undefined)
       continue;
 
     for (const auto u : component) {
-      values[u] = VALUE_TRUE;
-      FillFalse(scc[component_ids[u ^ 1]], values);
+      values[u] = Value::True;
+      FillFalse(scc[componentIds[u ^ 1]], values);
     }
   }
 
   for (size_t i = 0; i < values.size(); i += 2) {
-    assert(values[i] != VALUE_UNDEFINED);
-    assert(values[i + 1] != VALUE_UNDEFINED);
+    assert(values[i] != Value::Undefined);
+    assert(values[i + 1] != Value::Undefined);
     assert(values[i] != values[i + 1]);
-    if (values[i] == VALUE_TRUE)
-      assignment_[i / 2] = true;
+    if (values[i] == Value::True)
+      m_assignment[i / 2] = true;
   }
 }
 
-void SAT2::AddImpl(const DNF::X& a, const DNF::X& b) { adj_[GetIndex(a)].push_back(GetIndex(b)); }
+void SAT2::AddImpl(const DNF::X& a, const DNF::X& b) { m_adj[GetIndex(a)].push_back(GetIndex(b)); }
 }  // namespace algo
