@@ -40,7 +40,7 @@ private:
 template <typename T>
 class Matrix {
 public:
-  Matrix(size_t height, size_t width) : m_buffer(m_height * m_width), m_height(height), m_width(width) {}
+  Matrix(size_t height, size_t width) : m_buffer(height * width), m_height(height), m_width(width) {}
 
   size_t Height() const { return m_height; }
   size_t Width() const { return m_width; }
