@@ -3,5 +3,6 @@ AccessModifierOffset: -2
 AllowShortFunctionsOnASingleLine: All
 AllowShortLoopsOnASingleLine: false
 BasedOnStyle: Chromium
+BreakConstructorInitializers: BeforeComma
 ColumnLimit: 119
 SortIncludes: true
