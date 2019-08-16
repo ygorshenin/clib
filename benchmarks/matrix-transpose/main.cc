@@ -19,7 +19,7 @@ int main() {
   algo::MatrixTranspose<size_t, algo::MatrixAdapter> transpose(a, b);
   transpose.Go();
 
-  for (size_t i = 0; i < b.width(); ++i) {
+  for (size_t i = 0; i < b.Width(); ++i) {
     if (b(0, i) != i * kWidth) {
       fprintf(stderr, "Matrix transposition error\n");
       return 1;
