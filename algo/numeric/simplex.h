@@ -26,11 +26,8 @@ class Simplex {
 public:
   static inline const double kEps = 0.0000000001;
 
-  template <template <typename> class M>
-  explicit Simplex(const M<double>& as,
-                   const std::vector<double>& bs,
-                   const std::vector<double>& fs,
-                   bool verbose = false)
+  template <typename M>
+  explicit Simplex(const M& as, const std::vector<double>& bs, const std::vector<double>& fs, bool verbose = false)
       : m_as(as.Height() + 1, as.Width() + as.Height() + 1)
       , m_trial(m_as.Width())
       , m_brow(m_as.Width())
