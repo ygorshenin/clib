@@ -4,6 +4,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <iomanip>
 #include <iostream>
 #include <vector>
 
@@ -175,11 +176,14 @@ private:
   }
 
   void Display() const {
+    const auto flags = std::cerr.flags();
+    std::cerr << std::setprecision(3);
     for (size_t i = 0; i < m_as.Height(); ++i) {
       for (size_t j = 0; j < m_as.Width(); ++j)
-        std::cerr << m_as(i, j) << "\t";
+        std::cerr << std::setw(6) << m_as(i, j);
       std::cerr << std::endl;
     }
+    std::cerr.flags(flags);
   }
 
   Matrix<double> m_as;
