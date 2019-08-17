@@ -117,9 +117,8 @@ public:
 private:
   static double Zap(double x) { return fabs(x) < kEps ? 0.0 : x; }
 
-  // Returns index of the lexicographically smallest row among m_as[i]
-  // / m_as[i][j], where i > 0 and m_as[i][j] > 0.  If no such row,
-  // returns 0.
+  // Returns index of the lexicographically smallest row among m_as[i] / m_as[i][j],
+  // where i > 0 and m_as[i][j] > 0. If no such row returns 0.
   size_t GetRowToPivot(size_t j) {
     assert(m_trial.size() == m_as.Width());
 
