@@ -24,7 +24,7 @@ namespace algo {
 // D.E.K.: https://www-cs-faculty.stanford.edu/~knuth/programs/lp.w
 class Simplex {
 public:
-  static inline const double kEps = 0.0000000001;
+  static inline const double kEps = 1e-10;
 
   template <typename M>
   explicit Simplex(const M& as, const std::vector<double>& bs, const std::vector<double>& fs, bool verbose = false)
@@ -57,7 +57,8 @@ public:
   }
 
   // In case of finite solution, fills |target| with target function
-  // value and |xs| with variables values. Otherwise, returns false.
+  // value, fills |xs| with variables values and returns
+  // true. Otherwise, returns false.
   bool Solve(double& target, std::vector<double>& xs) {
     assert(m_as.Height() > 0);
 
@@ -66,22 +67,24 @@ public:
       ++steps;
 
       bool changed = false;
+
+      assert(m_as.Width() > 0);
       for (size_t j = m_as.Width() - 1; j > 0; --j) {
-        if (m_as(0, j) < 0) {
-          const auto i = GetRowToPivot(j);
-          if (i == 0) {
-            if (m_verbose)
-              std::cerr << "The maximum is infinite, proved after " << steps << " step(s)" << std::endl;
-            return false;
-          }
-          Pivot(i, j);
-          if (m_verbose) {
-            std::cerr << "After pivoting at (" << i << ", " << j << "):" << std::endl;
-            Display();
-          }
-          changed = true;
-          break;
+        if (m_as(0, j) >= 0)
+          continue;
+
+        const auto i = GetRowToPivot(j);
+        if (i == 0) {
+          if (m_verbose)
+            std::cerr << "The maximum is infinite, proved after " << steps << " step(s)" << std::endl;
+          return false;
         }
+        Pivot(i, j);
+        if (m_verbose) {
+          std::cerr << "After pivoting at (" << i << ", " << j << "):" << std::endl;
+          Display();
+        }
+        changed = true;
       }
 
       if (!changed)
@@ -114,8 +117,9 @@ public:
 private:
   static double Zap(double x) { return fabs(x) < kEps ? 0.0 : x; }
 
-  // Among all rows m_as[i], where i > 0, returns smallest by m_as[i] / m_as[i][j], where m_as[i][j] > 0.
-  // If no such row, returns 0.
+  // Returns index of the lexicographically smallest row among m_as[i]
+  // / m_as[i][j], where i > 0 and m_as[i][j] > 0.  If no such row,
+  // returns 0.
   size_t GetRowToPivot(size_t j) {
     assert(m_trial.size() == m_as.Width());
 
@@ -153,7 +157,10 @@ private:
     assert(i > 0);
     assert(i < m_as.Height());
     assert(j < m_as.Width());
+
     const auto z = m_as(i, j);
+    assert(z > 0);
+
     for (size_t q = 0; q < m_as.Width(); ++q)
       m_as(i, q) /= z;
     m_as(i, j) = 1;
@@ -189,7 +196,7 @@ private:
   std::vector<size_t> m_brow;  // basis row for each column
   std::vector<size_t> m_bcol;  // basis column for each row
 
-  double m_verbose;
+  bool m_verbose;
 };
 
 }  // namespace algo
