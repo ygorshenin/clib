@@ -11,7 +11,7 @@
 namespace algo {
 
 // Solves linear programming tasks in the following form:
-// fs[0] * xs[0] + fs[1] * xs[1] + ... + fs[n - 1] * xs[n - 1] -> maxs
+// fs[0] * xs[0] + fs[1] * xs[1] + ... + fs[n - 1] * xs[n - 1] -> max
 //
 // as[0][0] * xs[0] + as[0][1] * xs[1] + ... + as[0][n - 1] * xs[n - 1] <= bs[0]
 // as[1][0] * xs[0] + as[1][1] * xs[1] + ... + as[1][n - 1] * xs[n - 1] <= bs[1]
