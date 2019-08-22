@@ -36,8 +36,8 @@ public:
     assert(as.Height() == bs.size());
     assert(as.Width() == fs.size());
 
-    for (size_t i = 0; i < fs.size(); ++i)
-      m_as(0, as.Height() + 1 + i) = -fs[i];
+    for (size_t j = 0; j < fs.size(); ++j)
+      m_as(0, as.Height() + 1 + j) = -fs[j];
 
     for (size_t i = 0; i < as.Height(); ++i) {
       assert(bs[i] >= 0);
@@ -123,7 +123,7 @@ private:
     assert(m_trial.size() == m_as.Width());
 
     size_t p = 0;
-    size_t s = 0;
+    m_s = 0;
     for (size_t i = 1; i < m_as.Height(); ++i) {
       if (m_as(i, j) <= 0)
         continue;
@@ -134,15 +134,15 @@ private:
       }
 
       for (size_t q = 0; q < m_as.Width(); ++q) {
-        if (q == s)
-          m_trial[s++] = m_as(p, q) / m_as(p, j);
+        if (q == m_s)
+          m_trial[m_s++] = m_as(p, q) / m_as(p, j);
 
         const double z = m_as(i, q) / m_as(i, j);
         if (m_trial[q] != z) {
           if (m_trial[q] > z) {
             p = i;
             m_trial[q] = z;
-            s = q + 1;
+            m_s = q + 1;
           }
           break;
         }
@@ -160,7 +160,10 @@ private:
     const auto z = m_as(i, j);
     assert(z > 0);
 
-    for (size_t q = 0; q < m_as.Width(); ++q)
+    assert(m_s <= m_as.Width());
+    for (size_t q = 0; q < m_s; ++q)
+      m_as(i, q) = m_trial[q];
+    for (size_t q = m_s; q < m_as.Width(); ++q)
       m_as(i, q) /= z;
     m_as(i, j) = 1;
 
@@ -191,11 +194,12 @@ private:
 
   Matrix<double> m_as;
   std::vector<double> m_trial;
+  size_t m_s = 0;
 
   std::vector<size_t> m_brow;  // basis row for each column
   std::vector<size_t> m_bcol;  // basis column for each row
 
-  bool m_verbose;
+  bool m_verbose = false;
 };
 
 }  // namespace algo
