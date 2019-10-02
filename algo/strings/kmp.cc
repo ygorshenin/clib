@@ -1,44 +1,46 @@
 #include "strings/kmp.h"
 
 namespace algo {
-void BuildPrefixFunction(size_t size, const char* pattern, size_t* prefix) {
-  if (!size)
-    return;
-  size_t psl = 0;  // proper suffix length
-  prefix[0] = psl;
+void BuildPrefixFunction(size_t size, const char *pattern, size_t *prefix) {
+  prefix[0] = 0;
+  if (size != 0)
+    prefix[1] = 0;
+
   for (size_t i = 1; i < size; ++i) {
-    while (psl != 0 && pattern[i] != pattern[psl])
-      psl = prefix[psl - 1];
-    if (pattern[i] == pattern[psl])
-      ++psl;
-    prefix[i] = psl;
+    auto p = prefix[i];
+    while (p != 0 && pattern[p] != pattern[i])
+      p = prefix[p];
+    if (pattern[p] == pattern[i])
+      ++p;
+    prefix[i + 1] = p;
   }
 }
 
-void KMP(size_t text_size, const char* text, size_t pattern_size, const char* pattern, std::vector<size_t>& matches) {
-  if (!pattern_size) {
-    for (size_t i = 0; i <= text_size; ++i)
+void KMP(size_t textSize, const char *text, size_t patternSize,
+         const char *pattern, std::vector<size_t> &matches) {
+  if (!patternSize) {
+    for (size_t i = 0; i <= textSize; ++i)
       matches.push_back(i);
     return;
   }
 
-  std::vector<size_t> prefix(pattern_size);
-  BuildPrefixFunction(pattern_size, pattern, prefix.data());
+  std::vector<size_t> prefix(patternSize + 1);
+  BuildPrefixFunction(patternSize, pattern, prefix.data());
 
-  size_t mps = 0;  // matched pattern length
-  for (size_t i = 0; i < text_size; ++i) {
-    while (mps != 0 && text[i] != pattern[mps])
-      mps = prefix[mps - 1];
-    if (text[i] == pattern[mps])
-      ++mps;
-    if (mps == pattern_size) {
-      matches.push_back(i + 1 - pattern_size);
-      mps = prefix[mps - 1];
+  size_t j = 0;
+  for (size_t i = 0; i < textSize; ++i) {
+    while (j != 0 && text[i] != pattern[j])
+      j = prefix[j];
+    if (text[i] == pattern[j])
+      ++j;
+    if (j == patternSize) {
+      matches.push_back(i + 1 - patternSize);
+      j = prefix[j];
     }
   }
 }
 
-void Z(size_t size, const char* text, size_t* z) {
+void Z(size_t size, const char *text, size_t *z) {
   if (!size)
     return;
 
@@ -68,4 +70,4 @@ void Z(size_t size, const char* text, size_t* z) {
     }
   }
 }
-}  // namespace algo
+} // namespace algo
