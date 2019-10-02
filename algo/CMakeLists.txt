@@ -19,6 +19,7 @@ clib_add_library(algo
   sequences/sat2.cc
   sequences/segtree.h
   sequences/treap.h
+  strings/aho_corasick.cc
   strings/kmp.cc
   strings/suffix_array.cc
 )
@@ -40,6 +41,7 @@ clib_add_unittest(algo_unittest
   sequences/sat2_unittest.cc
   sequences/segtree_unittest.cc
   sequences/treap_unittest.cc
+  strings/aho_corasick_unittest.cc
   strings/kmp_unittest.cc
   strings/suffix_array_unittest.cc
 )
