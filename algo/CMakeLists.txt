@@ -10,8 +10,8 @@ clib_add_library(algo
   numeric/fft.cc
   numeric/matrix.cc
   numeric/simplex.cc
-  sequences/fenwick.h
   sequences/dsu.cc
+  sequences/fenwick.h
   sequences/heap.h
   sequences/median.h
   sequences/merge_sort.h
@@ -19,6 +19,8 @@ clib_add_library(algo
   sequences/sat2.cc
   sequences/segtree.h
   sequences/treap.h
+  solvers/nqueens.cc
+  solvers/nqueens.h
   strings/aho_corasick.cc
   strings/kmp.cc
   strings/suffix_array.cc
@@ -33,6 +35,7 @@ clib_add_unittest(algo_unittest
   numeric/matrix_unittest.cc
   numeric/simplex_unittest.cc
   sequences/dsu_unittest.cc
+  solvers/nqueens_unittest.cc
   sequences/fenwick_unittest.cc
   sequences/heap_unittest.cc
   sequences/median_unittest.cc

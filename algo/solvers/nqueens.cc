@@ -1,0 +1,1 @@
+#include <solvers/nqueens.h>
