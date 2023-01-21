@@ -29,7 +29,7 @@ public:
     uint64_t b = 0;
     uint64_t c = 0;
 
-    uint8_t level = 0;
+    size_t level = 0;
 
   enter : {
     if (level == n) {
