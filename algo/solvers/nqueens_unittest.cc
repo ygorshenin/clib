@@ -2,15 +2,15 @@
 
 #include "solvers/nqueens.h"
 
+#include <array>
 #include <cstdint>
-#include <vector>
 using namespace algo::solvers;
 using namespace std;
 
 namespace {
 uint64_t CountSolutions(uint8_t n) {
   uint64_t result = 0;
-  NQueens{}.Solve(n, [&result](const vector<uint64_t>& /* positions */) { ++result; });
+  NQueens{}.Solve(n, [&result](const NQueens::Candidates& /* candidates */) { ++result; });
   return result;
 }
 }  // namespace
