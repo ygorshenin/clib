@@ -38,4 +38,6 @@ inline uint8_t CeilLog(uint64_t x) noexcept {
 
   return msb;
 }
+
+inline uint64_t LSB(uint64_t x) noexcept { return x & (~x + 1); }
 }  // namespace algo
