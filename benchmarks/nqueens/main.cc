@@ -4,13 +4,14 @@
 #include <vector>
 
 using namespace std;
+using namespace algo::solvers;
 
 int main() {
   int n;
   cin >> n;
 
   uint64_t result = 0;
-  algo::solvers::NQueens{}.Solve(n, [&result](const vector<uint64_t>& /* positions */) { ++result; });
+  NQueens{}.Solve(n, [&result](const NQueens::Candidates& /* candidates */) { ++result; });
 
   cout << result << endl;
   return 0;

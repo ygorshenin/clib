@@ -4,18 +4,21 @@
 
 #include <iostream>
 
+#include <array>
 #include <cassert>
 #include <cstdint>
-#include <vector>
 
 namespace algo::solvers {
 class NQueens {
 public:
-  template <typename Fn>
-  void Solve(uint8_t n, Fn&& fn) const {
-    assert(2 * n - 1 <= 64);
+  static const size_t MAX_N = 32;
+  using Candidates = std::array<uint64_t, MAX_N>;
 
-    std::vector<uint64_t> candidates(n);
+  template <typename Fn>
+  void Solve(size_t n, Fn&& fn) const {
+    assert(n <= MAX_N);
+
+    Candidates candidates;
 
     const uint64_t all = (static_cast<uint64_t>(1) << n) - 1;
 
