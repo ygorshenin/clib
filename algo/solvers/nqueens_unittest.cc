@@ -2,8 +2,8 @@
 
 #include "solvers/nqueens.h"
 
-#include <array>
 #include <cstdint>
+
 using namespace algo::solvers;
 using namespace std;
 
