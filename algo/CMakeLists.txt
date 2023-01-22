@@ -19,6 +19,8 @@ clib_add_library(algo
   sequences/sat2.cc
   sequences/segtree.h
   sequences/treap.h
+  solvers/langford.cc
+  solvers/langford.h
   solvers/nqueens.cc
   solvers/nqueens.h
   strings/aho_corasick.cc
@@ -35,7 +37,6 @@ clib_add_unittest(algo_unittest
   numeric/matrix_unittest.cc
   numeric/simplex_unittest.cc
   sequences/dsu_unittest.cc
-  solvers/nqueens_unittest.cc
   sequences/fenwick_unittest.cc
   sequences/heap_unittest.cc
   sequences/median_unittest.cc
@@ -44,6 +45,8 @@ clib_add_unittest(algo_unittest
   sequences/sat2_unittest.cc
   sequences/segtree_unittest.cc
   sequences/treap_unittest.cc
+  solvers/langford_unittest.cc
+  solvers/nqueens_unittest.cc
   strings/aho_corasick_unittest.cc
   strings/kmp_unittest.cc
   strings/suffix_array_unittest.cc
