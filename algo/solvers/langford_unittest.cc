@@ -8,9 +8,35 @@ using namespace algo::solvers;
 using namespace std;
 
 namespace {
-uint64_t CountSolutions(uint8_t n) {
+bool IsGood(int n, const vector<int>& xs) {
+  if (xs.size() != static_cast<size_t>(2 * n))
+    return false;
+
+  vector<bool> found(n + 1);
+  for (int i = 0; i < 2 * n; ++i) {
+    if (xs[i] < 0)
+      continue;
+
+    const auto v = xs[i];
+    if (v < 1 || v > n || found[v])
+      return false;
+    if (i + v + 1 >= 2 * n || xs[i + v + 1] != -v)
+      return false;
+    found[v] = true;
+  }
+  for (int i = 1; i <= n; ++i) {
+    if (!found[i])
+      return false;
+  }
+  return true;
+}
+
+uint64_t CountSolutions(int n) {
   uint64_t result = 0;
-  Langford{}.SolveNaive(n, [&result](const vector<int>& /* solution */) { ++result; });
+  Langford{}.Solve(n, [&n, &result](const vector<int>& solution) {
+    ASSERT_TRUE(IsGood(n, solution));
+    ++result;
+  });
   return result;
 }
 }  // namespace

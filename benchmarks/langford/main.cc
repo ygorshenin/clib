@@ -10,7 +10,7 @@ int main() {
   cin >> n;
 
   uint64_t count = 0;
-  Langford{}.SolveNaive(n, [&count](const vector<int>& /* xs */) { ++count; });
+  Langford{}.Solve(n, [&count](const vector<int>& /* xs */) { ++count; });
   cout << count << endl;
   return 0;
 }
