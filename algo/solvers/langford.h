@@ -115,5 +115,5 @@ private:
     }
     xs[level] = 0;
   }
-};  // namespace algo::solvers
+};
 }  // namespace algo::solvers
