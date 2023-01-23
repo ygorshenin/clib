@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <cstdint>
 #include <vector>
 
 namespace algo::solvers {
@@ -25,6 +26,8 @@ public:
       ps[i] = i + 1;
     assert(ps[n] == 0);
 
+    uint64_t mask = 0;
+
     std::vector<int> xs(2 * n);
     std::vector<int> js(2 * n);
 
@@ -44,6 +47,16 @@ public:
       ++level;
 
     j = 0;
+
+    if (const int t = 2 * n - 2 - level; t >= 1 && t <= n && (mask & (static_cast<uint64_t>(1) << t)) == 0) {
+      if (xs[level + t + 1] != 0)
+        goto downgrade;
+      while (ps[j] != t)
+        j = ps[j];
+      k = t;
+      goto upgrade;
+    }
+
     k = ps[j];
 
   loop : {
@@ -53,6 +66,8 @@ public:
     }
 
     if (xs[level + k + 1] == 0) {
+    upgrade:
+      mask = mask ^ (static_cast<uint64_t>(1) << k);
       xs[level] = k;
       xs[level + k + 1] = -k;
       js[level] = j;
@@ -77,6 +92,7 @@ public:
     level = ls[--lstop];
     j = js[level];
     k = xs[level];
+    mask = mask ^ (static_cast<uint64_t>(1) << k);
     xs[level + k + 1] = 0;
     ps[j] = k;
     goto next;
