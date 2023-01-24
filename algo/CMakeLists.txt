@@ -23,6 +23,8 @@ clib_add_library(algo
   solvers/langford.h
   solvers/nqueens.cc
   solvers/nqueens.h
+  solvers/words.cc
+  solvers/words.h
   strings/aho_corasick.cc
   strings/kmp.cc
   strings/suffix_array.cc
@@ -47,6 +49,7 @@ clib_add_unittest(algo_unittest
   sequences/treap_unittest.cc
   solvers/langford_unittest.cc
   solvers/nqueens_unittest.cc
+  solvers/words_unittest.cc
   strings/aho_corasick_unittest.cc
   strings/kmp_unittest.cc
   strings/suffix_array_unittest.cc
