@@ -19,6 +19,8 @@ clib_add_library(algo
   sequences/sat2.cc
   sequences/segtree.h
   sequences/treap.h
+  solvers/dlx.cc
+  solvers/dlx.h
   solvers/langford.cc
   solvers/langford.h
   solvers/nqueens.cc

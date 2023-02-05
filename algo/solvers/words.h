@@ -54,8 +54,8 @@ struct WordRectangle {
       assert(std::distance(begin, end) == N);
       nwords.emplace_back(begin, end);
       for (auto& c : nwords.back()) {
-        assert(isalpha(word[i]));
-        assert(islower(word[i]));
+        assert(isalpha(c));
+        assert(islower(c));
         c -= 'a';
       }
     }

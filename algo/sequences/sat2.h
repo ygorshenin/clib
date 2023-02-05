@@ -26,7 +26,7 @@ struct DNF {
   DNF(const X& x) { Add(x); }
   DNF(const Disjunction& d) { Add(d); }
   DNF(const std::vector<Disjunction>& ds) {
-    for (const auto d : ds)
+    for (const auto& d : ds)
       Add(d);
   }
 
