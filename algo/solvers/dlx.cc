@@ -12,7 +12,7 @@ void SortUnique(vector<T>& vs) {
 }
 
 template <typename Fn, typename It>
-void EmitLine(ostream& os, const char* const tag, bool first, It begin, It end, size_t n, Fn&& getter) {
+void EmitTableLine(ostream& os, const char* const tag, bool first, It begin, It end, size_t n, Fn&& getter) {
   const auto INF = algo::solvers::DLX::INF;
 
   auto emit = [&os, &getter](auto it) {
@@ -49,12 +49,12 @@ void EmitLine(ostream& os, const char* const tag, bool first, It begin, It end, 
 }
 
 template <typename It>
-void EmitLine(ostream& os, It begin, It end, size_t n, size_t offset) {
+void EmitTableLine(ostream& os, It begin, It end, size_t n, size_t offset) {
   using Node = algo::solvers::DLX::Node;
 
   const bool first = (offset == 0);
 
-  auto emitLine = [&](const char* tag, auto&& getter) { EmitLine(os, tag, first, begin, end, n, getter); };
+  auto emitLine = [&](const char* tag, auto&& getter) { EmitTableLine(os, tag, first, begin, end, n, getter); };
 
   emitLine("\t", [&](const Node& /* node */) { return offset++; });
   emitLine("ULINK:", [&](const Node& node) { return node.m_ulink; });
@@ -62,71 +62,97 @@ void EmitLine(ostream& os, It begin, It end, size_t n, size_t offset) {
   emitLine("TOP:", [&](const Node& node) { return node.m_top; });
   os << endl;
 }
+
+template <typename Fn>
+void EmitHeadLine(ostream& os, const char* const tag, size_t n, Fn&& getter) {
+  os << tag;
+  for (size_t i = 0; i < n; ++i)
+    os << '\t' << getter(i);
+  os << endl;
+}
 }  // namespace
 
 namespace algo::solvers {
-// DLX::Task -------------------------------------------------------------------
-uint32_t DLX::Task::NumItems() const {
-  uint32_t numItems = 0;
-  for (const auto& option : m_options) {
-    for (const auto& item : option)
-      numItems = max(numItems, item + 1);
-  }
-  return numItems;
-}
-
-uint32_t DLX::Task::NumOptions() const { return m_options.size(); }
-
-// DLX -------------------------------------------------------------------------
-vector<DLX::Node> DLX::PrepareTable(const Task& task) const {
+// DLX::Table ------------------------------------------------------------------
+DLX::Table::Table(const Task& task) : m_task{task} {
+  const auto m = task.NumOptions();
   const auto n = task.NumItems();
 
-  vector<Node> table;
-  for (uint32_t i = 0; i < n; ++i)
-    table.emplace_back(/* ulink= */ i, /* dlink= */ i, /* top= */ i);
+  for (uint32_t i = 0; i < n; ++i) {
+    m_table.emplace_back(/* ulink= */ i, /* dlink= */ i, /* top= */ i);
+    m_options.emplace_back(INF);
+  }
 
-  table.emplace_back();  // a spacer node
+  m_table.emplace_back();  // a spacer node
+  m_options.emplace_back(INF);
 
-  for (auto option : task.m_options) {
+  for (uint32_t i = 0; i < m; ++i) {
+    auto option = task.GetOption(i);
     SortUnique(option);
     if (option.empty())
       continue;
 
-    const auto prevSpacer = table.size() - 1;
+    const auto prevSpacer = m_table.size() - 1;
     for (const auto& item : option) {
-      const Node node{/* ulink= */ table[item].m_dlink, /* dlink= */ item, /* top= */ item};
-      const uint32_t curr = table.size();
-      table.push_back(node);
-      table[node.m_dlink].m_ulink = curr;
-      table[node.m_ulink].m_dlink = curr;
-    }
-    table.emplace_back();  // a spacer node
-    const auto nextSpacer = table.size() - 1;
+      assert(item < n);
 
-    table[prevSpacer].m_dlink = nextSpacer - 1;
-    table[nextSpacer].m_ulink = prevSpacer + 1;
+      const Node node{/* ulink= */ m_table[item].m_ulink, /* dlink= */ item, /* top= */ item};
+      const uint32_t curr = m_table.size();
+      m_table.push_back(node);
+      m_table[node.m_dlink].m_ulink = curr;
+      m_table[node.m_ulink].m_dlink = curr;
+      m_options.push_back(i);
+    }
+    m_table.emplace_back();  // a spacer node
+    m_options.emplace_back(INF);
+    const auto nextSpacer = m_table.size() - 1;
+
+    m_table[prevSpacer].m_dlink = nextSpacer - 1;
+    m_table[nextSpacer].m_ulink = prevSpacer + 1;
   }
 
-  return table;
+  assert(m_table.size() == m_options.size());
 }
 
-void DLX::DebugPrint(std::ostream& os, const Task& task, const std::vector<Node>& table) const {
-  const auto n = task.NumItems();
-  const auto m = task.NumOptions();
+void DLX::Table::DebugPrint(std::ostream& os) const {
+  const auto n = m_task.NumItems();
+  const auto m = m_task.NumOptions();
   os << "Num items: " << n << endl;
   os << "Num options: " << m << endl;
 
-  EmitLine(os, &table[0], &table[0] + n, n, 0);
+  EmitTableLine(os, &m_table[0], &m_table[0] + n, n, 0);
 
   uint32_t from = n;
-  assert(table[from].m_top == INF);
+  assert(m_table[from].m_top == INF);
 
-  while (from + 1 < table.size()) {
+  while (from + 1 < m_table.size()) {
     uint32_t to = from + 1;
-    while (table[to].m_top != INF)
+    while (m_table[to].m_top != INF)
       ++to;
-    EmitLine(os, &table[from], &table[to] + 1, n, from);
+    EmitTableLine(os, &m_table[from], &m_table[to] + 1, n, from);
     from = to;
   }
+}
+
+// DLX::HeadList ---------------------------------------------------------------
+DLX::HeadList::HeadList(uint32_t n, Table& table) : m_table{table}, m_list(n + 1), m_head{n} {
+  for (uint32_t i = 0; i < n; ++i) {
+    m_list[i].m_left = (i > 0 ? i - 1 : n);
+    m_list[i].m_right = i + 1;
+    for (auto curr = table[i].m_dlink; curr != i; curr = table[curr].m_dlink)
+      ++m_list[i].m_len;
+  }
+
+  m_list[n].m_left = (n > 0 ? n - 1 : 0);
+  m_list[n].m_right = 0;
+}
+
+void DLX::HeadList::DebugPrint(std::ostream& os) const {
+  auto emitLine = [&](const char* tag, auto&& getter) { EmitHeadLine(os, tag, m_list.size(), getter); };
+
+  emitLine("\t", [](size_t i) { return i; });
+  emitLine("LEFT:", [this](size_t i) { return m_list[i].m_left; });
+  emitLine("RIGHT:", [this](size_t i) { return m_list[i].m_right; });
+  emitLine("LEN:", [this](size_t i) { return m_list[i].m_len; });
 }
 }  // namespace algo::solvers
