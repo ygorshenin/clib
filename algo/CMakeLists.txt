@@ -49,6 +49,7 @@ clib_add_unittest(algo_unittest
   sequences/sat2_unittest.cc
   sequences/segtree_unittest.cc
   sequences/treap_unittest.cc
+  solvers/dlx_unittest.cc
   solvers/langford_unittest.cc
   solvers/nqueens_unittest.cc
   solvers/words_unittest.cc
