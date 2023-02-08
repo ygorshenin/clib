@@ -54,7 +54,7 @@ TEST(Solvers, Langford) {
   ASSERT_EQ(CountSolutions(8), 300);
   ASSERT_EQ(CountSolutions(9), 0);
   ASSERT_EQ(CountSolutions(10), 0);
-  ASSERT_EQ(CountSolutions(11), 35584);
-  ASSERT_EQ(CountSolutions(12), 216288);
+  ASSERT_EQ(CountSolutions(11), 35'584);
+  ASSERT_EQ(CountSolutions(12), 216'288);
 }
 }  // namespace algo

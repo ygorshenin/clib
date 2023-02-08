@@ -4,6 +4,7 @@
 #include "solvers/langford.h"
 
 #include <algorithm>
+#include <limits>
 #include <numeric>
 #include <vector>
 
@@ -11,9 +12,17 @@ using namespace algo::solvers;
 using namespace std;
 
 namespace {
+const auto INF = numeric_limits<uint32_t>::max();
+
+template <typename T>
+void SortUnique(vector<T>& vs) {
+  sort(vs.begin(), vs.end());
+  vs.erase(unique(vs.begin(), vs.end()), vs.end());
+}
+
 vector<vector<int>> LangfordBaseline(uint32_t size) {
   vector<vector<int>> solutions;
-  Langford{}.Solve(size, [&](vector<int> solution) { solutions.emplace_back(std::move(solution)); });
+  Langford{}.Solve(size, [&](vector<int> solution) { solutions.emplace_back(move(solution)); });
   sort(solutions.begin(), solutions.end());
   return solutions;
 }
@@ -38,7 +47,7 @@ vector<vector<int>> LangfordDLX(uint32_t size) {
       solution[option[1] - size] = value;
       solution[option[2] - size] = -value;
     }
-    solutions.emplace_back(std::move(solution));
+    solutions.emplace_back(move(solution));
   });
 
   sort(solutions.begin(), solutions.end());
@@ -78,7 +87,7 @@ TEST(DLX, Simple) {
   vector<vector<uint32_t>> solutions;
   DLX::Solve(task, [&](const uint32_t* options, uint32_t n) {
     vector<uint32_t> solution(options, options + n);
-    solutions.emplace_back(std::move(solution));
+    solutions.emplace_back(move(solution));
   });
   ASSERT_EQ(solutions.size(), 1);
 
@@ -109,7 +118,7 @@ TEST(DLX, Permutations) {
       const auto& option = task.GetOption(options[i]);
       permutation[option[1] - size] = option[0];
     }
-    actual.emplace_back(std::move(permutation));
+    actual.emplace_back(move(permutation));
   });
   sort(actual.begin(), actual.end());
 
@@ -134,5 +143,47 @@ TEST(DLX, Langford) {
     ASSERT_EQ(expected.size(), actual.size()) << "size check failed at size " << size;
     ASSERT_EQ(expected, actual) << "contents check failed at size " << size;
   }
+}
+
+TEST(DLX, NQueens) {
+  const uint32_t n = 8;
+
+  DLX::Task task{/* numStrict= */ 2 * n, /* numSlack= */ 4 * n - 2};
+  for (uint32_t r = 0; r < n; ++r) {
+    for (uint32_t c = 0; c < n; ++c) {
+      // -n + 1 <= r - c < n
+      // 0 <= r + c < 2 * n - 1
+      task.AddOption({r, n + c, 3 * n - 1 + r - c, 4 * n - 1 + r + c});
+    }
+  }
+
+  vector<vector<uint32_t>> solutions;
+
+  DLX::Solve(task, [&](const uint32_t* options, uint32_t m) {
+    ASSERT_EQ(m, n);
+
+    vector<uint32_t> positions(n, INF);
+    for (uint32_t i = 0; i < n; ++i) {
+      const auto& option = task.GetOption(options[i]);
+      const auto r = option[0];
+      const auto c = option[1] - n;
+      ASSERT_EQ(positions[r], INF);
+      positions[r] = c;
+    }
+
+    for (uint32_t i = 0; i < n; ++i) {
+      for (uint32_t j = 0; j < i; ++j) {
+        ASSERT_TRUE(positions[i] != positions[j]);
+        ASSERT_TRUE(positions[i] - positions[j] != i - j);
+        ASSERT_TRUE(positions[i] - positions[j] != j - i);
+      }
+    }
+
+    solutions.emplace_back(move(positions));
+  });
+
+  ASSERT_EQ(solutions.size(), 92);
+  SortUnique(solutions);
+  ASSERT_EQ(solutions.size(), 92);
 }
 }  // namespace algo
