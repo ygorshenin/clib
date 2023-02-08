@@ -13,20 +13,22 @@ public:
 
   class Task {
   public:
-    explicit Task(uint32_t numItems) : m_numItems{numItems} {}
+    explicit Task(uint32_t numStrict, uint32_t numSlack = 0) : m_strict{numStrict}, m_total{numStrict + numSlack} {
+      assert(m_total >= m_strict);
+    }
 
-    uint32_t NumItems() const { return m_numItems; }
+    uint32_t NumStrictItems() const { return m_strict; }
+    uint32_t NumTotalItems() const { return m_total; }
     uint32_t NumOptions() const { return m_options.size(); }
 
-    void AddOption(std::vector<uint32_t> option) {
-      m_options.emplace_back(std::move(option));
-    }
+    void AddOption(std::vector<uint32_t> option) { m_options.emplace_back(std::move(option)); }
 
     const std::vector<uint32_t>& GetOption(uint32_t i) const { return m_options[i]; }
 
   private:
     std::vector<std::vector<uint32_t>> m_options;
-    uint32_t m_numItems{};
+    uint32_t m_strict{};
+    uint32_t m_total{};
   };
 
   struct Node {
@@ -124,7 +126,7 @@ public:
   };
 
   struct HeadList {
-    HeadList(uint32_t n, Table& table);
+    HeadList(uint32_t numStrict, uint32_t numTotal, Table& table);
 
     const Head& operator[](uint32_t i) const { return m_list[i]; }
     Head& operator[](uint32_t i) { return m_list[i]; }
@@ -180,14 +182,13 @@ public:
 
   template <bool Decode = true, typename Fn>
   static void Solve(const Task& task, Fn&& fn) {
-    const auto n = task.NumItems();
     const auto m = task.NumOptions();
 
     std::vector<uint32_t> xs(m + 1);
     std::vector<uint32_t> os(m + 1);
 
     Table table{task};
-    HeadList head{n, table};
+    HeadList head{task.NumStrictItems(), task.NumTotalItems(), table};
     size_t level = 0;
 
   enter : {

@@ -76,7 +76,7 @@ namespace algo::solvers {
 // DLX::Table ------------------------------------------------------------------
 DLX::Table::Table(const Task& task) : m_task{task} {
   const auto m = task.NumOptions();
-  const auto n = task.NumItems();
+  const auto n = task.NumTotalItems();
 
   for (uint32_t i = 0; i < n; ++i) {
     m_table.emplace_back(/* ulink= */ i, /* dlink= */ i, /* top= */ i);
@@ -115,9 +115,10 @@ DLX::Table::Table(const Task& task) : m_task{task} {
 }
 
 void DLX::Table::DebugPrint(std::ostream& os) const {
-  const auto n = m_task.NumItems();
+  const auto n = m_task.NumTotalItems();
   const auto m = m_task.NumOptions();
-  os << "Num items: " << n << endl;
+  os << "Num strict items: " << m_task.NumStrictItems() << endl;
+  os << "Num total items: " << n << endl;
   os << "Num options: " << m << endl;
 
   EmitTableLine(os, &m_table[0], &m_table[0] + n, n, 0);
@@ -135,16 +136,22 @@ void DLX::Table::DebugPrint(std::ostream& os) const {
 }
 
 // DLX::HeadList ---------------------------------------------------------------
-DLX::HeadList::HeadList(uint32_t n, Table& table) : m_table{table}, m_list(n + 1), m_head{n} {
-  for (uint32_t i = 0; i < n; ++i) {
-    m_list[i].m_left = (i > 0 ? i - 1 : n);
-    m_list[i].m_right = i + 1;
+DLX::HeadList::HeadList(uint32_t numStrict, uint32_t numTotal, Table& table)
+    : m_table{table}, m_list(numTotal + 1), m_head{numTotal} {
+  m_list[m_head].m_left = m_head;
+  m_list[m_head].m_right = m_head;
+
+  for (uint32_t i = 0; i < numTotal; ++i) {
+    if (i < numStrict) {
+      m_list[i].m_left = m_list[m_head].m_left;
+      m_list[i].m_right = m_head;
+      Insert(i);
+    } else {
+      m_list[i].m_left = m_list[i].m_right = i;
+    }
     for (auto curr = table[i].m_dlink; curr != i; curr = table[curr].m_dlink)
       ++m_list[i].m_len;
   }
-
-  m_list[n].m_left = (n > 0 ? n - 1 : 0);
-  m_list[n].m_right = 0;
 }
 
 void DLX::HeadList::DebugPrint(std::ostream& os) const {
