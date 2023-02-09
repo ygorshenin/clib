@@ -118,6 +118,7 @@ void DLX::Table::DebugPrint(std::ostream& os) const {
   const auto n = m_task.NumTotalItems();
   const auto m = m_task.NumOptions();
   os << "Num strict items: " << m_task.NumStrictItems() << endl;
+  os << "Num slack items: " << (n - m_task.NumStrictItems()) << endl;
   os << "Num total items: " << n << endl;
   os << "Num options: " << m << endl;
 
