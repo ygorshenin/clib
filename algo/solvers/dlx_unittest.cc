@@ -15,15 +15,20 @@ namespace {
 const auto INF = numeric_limits<uint32_t>::max();
 
 template <typename T>
-void SortUnique(vector<T>& vs) {
+void Sort(vector<T>& vs) {
   sort(vs.begin(), vs.end());
+}
+
+template <typename T>
+void SortUnique(vector<T>& vs) {
+  Sort(vs);
   vs.erase(unique(vs.begin(), vs.end()), vs.end());
 }
 
 vector<vector<int>> LangfordBaseline(uint32_t size) {
   vector<vector<int>> solutions;
   Langford{}.Solve(size, [&](vector<int> solution) { solutions.emplace_back(move(solution)); });
-  sort(solutions.begin(), solutions.end());
+  Sort(solutions);
   return solutions;
 }
 
@@ -50,30 +55,28 @@ vector<vector<int>> LangfordDLX(uint32_t size) {
     solutions.emplace_back(move(solution));
   });
 
-  sort(solutions.begin(), solutions.end());
+  Sort(solutions);
   return solutions;
 }
-}  // namespace
 
-namespace algo {
 TEST(DLX, Smoke0) {
   DLX::Task task{/* numItems= */ 0};
-  uint32_t called = 0;
+  bool called = false;
   DLX::Solve(task, [&](const uint32_t* options, uint32_t n) {
     ASSERT_EQ(n, 0);
-    ++called;
+    called = true;
   });
-  ASSERT_EQ(called, 1);
+  ASSERT_TRUE(called);
 }
 
 TEST(DLX, Smoke1) {
   DLX::Task task{/* numItems= */ 1};
-  uint32_t called = 0;
+  bool called = false;
   DLX::Solve(task, [&](const uint32_t* options, uint32_t n) {
     ASSERT_EQ(n, 0);
-    ++called;
+    called = true;
   });
-  ASSERT_EQ(called, 0);
+  ASSERT_FALSE(called);
 }
 
 TEST(DLX, Simple) {
@@ -92,39 +95,39 @@ TEST(DLX, Simple) {
   ASSERT_EQ(solutions.size(), 1);
 
   auto& actual = solutions[0];
-  sort(actual.begin(), actual.end());
+  Sort(actual);
 
   const vector<uint32_t> expected{0, 3, 4};
   ASSERT_EQ(expected, actual);
 }
 
 TEST(DLX, Permutations) {
-  const uint32_t size = 5;
+  const uint32_t SIZE = 5;
 
-  DLX::Task task{/* numItems= */ 2 * size};
-  for (uint32_t i = 0; i < size; ++i) {
-    for (uint32_t j = 0; j < size; ++j) {
+  DLX::Task task{/* numItems= */ 2 * SIZE};
+  for (uint32_t i = 0; i < SIZE; ++i) {
+    for (uint32_t j = 0; j < SIZE; ++j) {
       // This option means placement of value i on the j-th position.
-      task.AddOption({i, size + j});
+      task.AddOption({i, SIZE + j});
     }
   }
 
   vector<vector<uint32_t>> actual;
   DLX::Solve(task, [&](const uint32_t* options, uint32_t n) {
-    ASSERT_EQ(n, size);
+    ASSERT_EQ(n, SIZE);
 
-    vector<uint32_t> permutation(size);
+    vector<uint32_t> permutation(SIZE);
     for (uint32_t i = 0; i < n; ++i) {
       const auto& option = task.GetOption(options[i]);
-      permutation[option[1] - size] = option[0];
+      permutation[option[1] - SIZE] = option[0];
     }
     actual.emplace_back(move(permutation));
   });
-  sort(actual.begin(), actual.end());
+  Sort(actual);
 
   vector<vector<uint32_t>> expected;
   {
-    vector<uint32_t> permutation(size);
+    vector<uint32_t> permutation(SIZE);
     iota(permutation.begin(), permutation.end(), static_cast<uint32_t>(0));
     do {
       expected.push_back(permutation);
@@ -137,7 +140,9 @@ TEST(DLX, Permutations) {
 }
 
 TEST(DLX, Langford) {
-  for (uint32_t size = 0; size <= 12; ++size) {
+  const uint32_t MAX_SIZE = 12;
+
+  for (uint32_t size = 0; size <= MAX_SIZE; ++size) {
     const auto expected = LangfordBaseline(size);
     const auto actual = LangfordDLX(size);
     ASSERT_EQ(expected.size(), actual.size()) << "size check failed at size " << size;
@@ -146,21 +151,21 @@ TEST(DLX, Langford) {
 }
 
 TEST(DLX, NQueens) {
-  const uint32_t n = 8;
+  const uint32_t BOARD_SIZE = 8;
 
-  DLX::Task task{/* numStrict= */ 2 * n, /* numSlack= */ 4 * n - 2};
-  for (uint32_t r = 0; r < n; ++r) {
-    for (uint32_t c = 0; c < n; ++c) {
-      // -n + 1 <= r - c < n
-      // 0 <= r + c < 2 * n - 1
-      task.AddOption({r, n + c, 3 * n - 1 + r - c, 4 * n - 1 + r + c});
+  DLX::Task task{/* numStrict= */ 2 * BOARD_SIZE, /* numSlack= */ 4 * BOARD_SIZE - 2};
+  for (uint32_t r = 0; r < BOARD_SIZE; ++r) {
+    for (uint32_t c = 0; c < BOARD_SIZE; ++c) {
+      // -BOARD_SIZE + 1 <= r - c < BOARD_SIZE
+      // 0 <= r + c < 2 * BOARD_SIZE - 1
+      task.AddOption({r, BOARD_SIZE + c, 3 * BOARD_SIZE - 1 + r - c, 4 * BOARD_SIZE - 1 + r + c});
     }
   }
 
   vector<vector<uint32_t>> solutions;
 
-  DLX::Solve(task, [&](const uint32_t* options, uint32_t m) {
-    ASSERT_EQ(m, n);
+  DLX::Solve(task, [&](const uint32_t* options, uint32_t n) {
+    ASSERT_EQ(n, BOARD_SIZE);
 
     vector<uint32_t> positions(n, INF);
     for (uint32_t i = 0; i < n; ++i) {
@@ -186,4 +191,4 @@ TEST(DLX, NQueens) {
   SortUnique(solutions);
   ASSERT_EQ(solutions.size(), 92);
 }
-}  // namespace algo
+}  // namespace
