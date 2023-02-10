@@ -33,11 +33,13 @@ vector<vector<int>> LangfordBaseline(uint32_t size) {
 }
 
 vector<vector<int>> LangfordDLX(uint32_t size) {
-  DLX::DimTask<2> task{/* items */ size, /* positions */ 2 * size};
+  enum { ITEM, POS, NUM_DIMS };
+
+  DLX::DimTask<NUM_DIMS> task{/* items */ size, /* positions */ 2 * size};
 
   for (uint32_t i = 0; i < size; ++i) {
     for (uint32_t j = 0; j + i + 2 < 2 * size; ++j)
-      task.AddOption().SetItems<0>(i).SetItems<1>(j, j + i + 2);
+      task.AddOption().SetItems<ITEM>(i).SetItems<POS>(j, j + i + 2);
   }
 
   vector<vector<int>> solutions;
@@ -47,9 +49,9 @@ vector<vector<int>> LangfordDLX(uint32_t size) {
     vector<int> solution(2 * size);
     for (uint32_t i = 0; i < n; ++i) {
       const auto& option = task.GetOption(options[i]);
-      const int value = option[0][0] + 1;
-      solution[option[1][0]] = value;
-      solution[option[1][1]] = -value;
+      const int value = option[ITEM][0] + 1;
+      solution[option[POS][0]] = value;
+      solution[option[POS][1]] = -value;
     }
     solutions.emplace_back(move(solution));
   });
@@ -150,18 +152,20 @@ TEST(DLX, Langford) {
 }
 
 TEST(DLX, NQueens) {
+  enum { ROW, COL, LR_DIAG, RL_DIAG, NUM_DIMS };
+
   const int32_t BOARD_SIZE = 8;
 
-  DLX::DimTask<4> task{/* rows */ BOARD_SIZE,
-                       /* cols */ BOARD_SIZE,
-                       /* ↘ diags */ 2 * BOARD_SIZE - 1,
-                       /* ↙ diags */ 2 * BOARD_SIZE - 1};
-  task.SetSlack<2>();
-  task.SetSlack<3>();
+  DLX::DimTask<NUM_DIMS> task{/* rows */ BOARD_SIZE,
+                              /* cols */ BOARD_SIZE,
+                              /* ↘ diags */ 2 * BOARD_SIZE - 1,
+                              /* ↙ diags */ 2 * BOARD_SIZE - 1};
+  task.SetSlack<LR_DIAG>();
+  task.SetSlack<RL_DIAG>();
 
   for (int32_t r = 0; r < BOARD_SIZE; ++r) {
     for (int32_t c = 0; c < BOARD_SIZE; ++c)
-      task.AddOption().SetItems<0>(r).SetItems<1>(c).SetItems<2>(r - c).SetItems<3>(r + c);
+      task.AddOption().SetItems<ROW>(r).SetItems<COL>(c).SetItems<LR_DIAG>(r - c).SetItems<RL_DIAG>(r + c);
   }
 
   vector<vector<uint32_t>> solutions;
@@ -172,8 +176,8 @@ TEST(DLX, NQueens) {
     vector<uint32_t> positions(n, INF);
     for (uint32_t i = 0; i < n; ++i) {
       const auto& option = task.GetOption(options[i]);
-      const auto r = option[0][0];
-      const auto c = option[1][0];
+      const auto r = option[ROW][0];
+      const auto c = option[COL][0];
       ASSERT_EQ(positions[r], INF);
       positions[r] = c;
     }
