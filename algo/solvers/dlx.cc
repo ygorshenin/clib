@@ -76,7 +76,7 @@ namespace algo::solvers {
 // DLX::Table ------------------------------------------------------------------
 DLX::Table::Table(const Task& task) : m_task{task} {
   const auto m = task.NumOptions();
-  const auto n = task.NumTotalItems();
+  const auto n = task.NumItems();
 
   for (uint32_t i = 0; i < n; ++i) {
     m_table.emplace_back(/* ulink= */ i, /* dlink= */ i, /* top= */ i);
@@ -115,11 +115,18 @@ DLX::Table::Table(const Task& task) : m_task{task} {
 }
 
 void DLX::Table::DebugPrint(std::ostream& os) const {
-  const auto n = m_task.NumTotalItems();
+  const auto n = m_task.NumItems();
   const auto m = m_task.NumOptions();
-  os << "Num strict items: " << m_task.NumStrictItems() << endl;
-  os << "Num slack items: " << (n - m_task.NumStrictItems()) << endl;
-  os << "Num total items: " << n << endl;
+
+  os << "Num items: " << n << endl;
+
+  os << "Slack items:";
+  for (uint32_t i = 0; i < n; ++i) {
+    if (m_task.IsSlack(i))
+      os << ' ' << i;
+  }
+  os << endl;
+
   os << "Num options: " << m << endl;
 
   EmitTableLine(os, &m_table[0], &m_table[0] + n, n, 0);
@@ -137,18 +144,20 @@ void DLX::Table::DebugPrint(std::ostream& os) const {
 }
 
 // DLX::HeadList ---------------------------------------------------------------
-DLX::HeadList::HeadList(uint32_t numStrict, uint32_t numTotal, Table& table)
-    : m_table{table}, m_list(numTotal + 1), m_head{numTotal} {
+DLX::HeadList::HeadList(Table& table)
+    : m_table{table}, m_list(table.m_task.NumItems() + 1), m_head{table.m_task.NumItems()} {
+  const auto& task = table.m_task;
+
   m_list[m_head].m_left = m_head;
   m_list[m_head].m_right = m_head;
 
-  for (uint32_t i = 0; i < numTotal; ++i) {
-    if (i < numStrict) {
+  for (uint32_t i = 0; i < task.NumItems(); ++i) {
+    if (task.IsSlack(i)) {
+      m_list[i].m_left = m_list[i].m_right = i;
+    } else {
       m_list[i].m_left = m_list[m_head].m_left;
       m_list[i].m_right = m_head;
       Insert(i);
-    } else {
-      m_list[i].m_left = m_list[i].m_right = i;
     }
     for (auto curr = table[i].m_dlink; curr != i; curr = table[curr].m_dlink)
       ++m_list[i].m_len;

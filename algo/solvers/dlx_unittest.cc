@@ -33,12 +33,11 @@ vector<vector<int>> LangfordBaseline(uint32_t size) {
 }
 
 vector<vector<int>> LangfordDLX(uint32_t size) {
-  DLX::Task task{/* numItems= */ 3 * size};
+  DLX::DimTask<2> task{/* items */ size, /* positions */ 2 * size};
+
   for (uint32_t i = 0; i < size; ++i) {
-    for (uint32_t j = 0; j + i + 2 < 2 * size; ++j) {
-      // This option means placement of i on positions j and j + (i + 1) + 1.
-      task.AddOption({i, size + j, size + j + (i + 1) + 1});
-    }
+    for (uint32_t j = 0; j + i + 2 < 2 * size; ++j)
+      task.AddOption().SetItems<0>(i).SetItems<1>(j, j + i + 2);
   }
 
   vector<vector<int>> solutions;
@@ -48,9 +47,9 @@ vector<vector<int>> LangfordDLX(uint32_t size) {
     vector<int> solution(2 * size);
     for (uint32_t i = 0; i < n; ++i) {
       const auto& option = task.GetOption(options[i]);
-      const int value = option[0] + 1;
-      solution[option[1] - size] = value;
-      solution[option[2] - size] = -value;
+      const int value = option[0][0] + 1;
+      solution[option[1][0]] = value;
+      solution[option[1][1]] = -value;
     }
     solutions.emplace_back(move(solution));
   });
@@ -151,15 +150,18 @@ TEST(DLX, Langford) {
 }
 
 TEST(DLX, NQueens) {
-  const uint32_t BOARD_SIZE = 8;
+  const int32_t BOARD_SIZE = 8;
 
-  DLX::Task task{/* numStrict= */ 2 * BOARD_SIZE, /* numSlack= */ 4 * BOARD_SIZE - 2};
-  for (uint32_t r = 0; r < BOARD_SIZE; ++r) {
-    for (uint32_t c = 0; c < BOARD_SIZE; ++c) {
-      // -BOARD_SIZE + 1 <= r - c < BOARD_SIZE
-      // 0 <= r + c < 2 * BOARD_SIZE - 1
-      task.AddOption({r, BOARD_SIZE + c, 3 * BOARD_SIZE - 1 + r - c, 4 * BOARD_SIZE - 1 + r + c});
-    }
+  DLX::DimTask<4> task{/* rows */ BOARD_SIZE,
+                       /* cols */ BOARD_SIZE,
+                       /* ↘ diags */ 2 * BOARD_SIZE - 1,
+                       /* ↙ diags */ 2 * BOARD_SIZE - 1};
+  task.SetSlack<2>();
+  task.SetSlack<3>();
+
+  for (int32_t r = 0; r < BOARD_SIZE; ++r) {
+    for (int32_t c = 0; c < BOARD_SIZE; ++c)
+      task.AddOption().SetItems<0>(r).SetItems<1>(c).SetItems<2>(r - c).SetItems<3>(r + c);
   }
 
   vector<vector<uint32_t>> solutions;
@@ -170,8 +172,8 @@ TEST(DLX, NQueens) {
     vector<uint32_t> positions(n, INF);
     for (uint32_t i = 0; i < n; ++i) {
       const auto& option = task.GetOption(options[i]);
-      const auto r = option[0];
-      const auto c = option[1] - n;
+      const auto r = option[0][0];
+      const auto c = option[1][0];
       ASSERT_EQ(positions[r], INF);
       positions[r] = c;
     }
