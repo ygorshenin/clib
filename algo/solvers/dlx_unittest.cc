@@ -103,14 +103,14 @@ TEST(DLX, Simple) {
 }
 
 TEST(DLX, Permutations) {
+  enum { ITEM, POS, NUM_DIMS };
+
   const uint32_t SIZE = 5;
 
-  DLX::Task task{/* numItems= */ 2 * SIZE};
+  DLX::DimTask<NUM_DIMS> task{SIZE, SIZE};
   for (uint32_t i = 0; i < SIZE; ++i) {
-    for (uint32_t j = 0; j < SIZE; ++j) {
-      // This option means placement of value i on the j-th position.
-      task.AddOption({i, SIZE + j});
-    }
+    for (uint32_t j = 0; j < SIZE; ++j)
+      task.AddOption().SetItems<ITEM>(i).SetItems<POS>(j);
   }
 
   vector<vector<uint32_t>> actual;
@@ -120,7 +120,7 @@ TEST(DLX, Permutations) {
     vector<uint32_t> permutation(SIZE);
     for (uint32_t i = 0; i < n; ++i) {
       const auto& option = task.GetOption(options[i]);
-      permutation[option[1] - SIZE] = option[0];
+      permutation[option[POS][0]] = option[ITEM][0];
     }
     actual.emplace_back(move(permutation));
   });
@@ -158,7 +158,7 @@ TEST(DLX, NQueens) {
 
   DLX::DimTask<NUM_DIMS> task{/* rows */ BOARD_SIZE,
                               /* cols */ BOARD_SIZE,
-                              /* ↘ diags */ 2 * BOARD_SIZE - 1,
+                              /* ↘ diags */ DLX::Dim{-BOARD_SIZE + 1, BOARD_SIZE},
                               /* ↙ diags */ 2 * BOARD_SIZE - 1};
   task.SetSlack<LR_DIAG>();
   task.SetSlack<RL_DIAG>();
