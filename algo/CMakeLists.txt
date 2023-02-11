@@ -25,6 +25,8 @@ clib_add_library(algo
   solvers/langford.h
   solvers/nqueens.cc
   solvers/nqueens.h
+  solvers/sudoku.cc
+  solvers/sudoku.h
   solvers/words.cc
   solvers/words.h
   strings/aho_corasick.cc
@@ -52,6 +54,7 @@ clib_add_unittest(algo_unittest
   solvers/dlx_unittest.cc
   solvers/langford_unittest.cc
   solvers/nqueens_unittest.cc
+  solvers/sudoku_unittest.cc
   solvers/words_unittest.cc
   strings/aho_corasick_unittest.cc
   strings/kmp_unittest.cc

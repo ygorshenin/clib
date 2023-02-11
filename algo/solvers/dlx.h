@@ -15,7 +15,7 @@ public:
 
   class Task {
   public:
-    explicit Task(uint32_t numItems) : m_slack(numItems), m_numItems{numItems} {}
+    explicit Task(uint32_t numItems) : m_slack(numItems), m_cover(numItems), m_numItems{numItems} {}
 
     uint32_t NumItems() const { return m_numItems; }
     uint32_t NumOptions() const { return m_options.size(); }
@@ -25,9 +25,19 @@ public:
       m_slack[item] = true;
     }
 
+    void SetCover(uint32_t item) {
+      assert(item < m_numItems);
+      m_cover[item] = true;
+    }
+
     bool IsSlack(uint32_t item) const {
       assert(item < m_numItems);
       return m_slack[item];
+    }
+
+    bool IsCover(uint32_t item) const {
+      assert(item < m_numItems);
+      return m_cover[item];
     }
 
     void AddOption(std::vector<uint32_t> option) { m_options.emplace_back(std::move(option)); }
@@ -37,23 +47,27 @@ public:
   private:
     std::vector<std::vector<uint32_t>> m_options;
     std::vector<bool> m_slack;
+    std::vector<bool> m_cover;
     uint32_t m_numItems{};
   };
 
-  struct Range {
-    void Update(int32_t value) {
-      m_min = std::min(m_min, value);
-      m_max = std::max(m_max, value);
+  struct Dim {
+    Dim(int32_t size) : m_from{0}, m_to{size} { assert(m_to >= m_from); }
+    Dim(int32_t from, int32_t to) : m_from{from}, m_to{to} { assert(m_to >= m_from); }
+
+    uint32_t Size() const { return m_to - m_from; }
+
+    bool Contains(int32_t item) const { return item >= m_from && item < m_to; }
+
+    uint32_t GetOffset(int32_t item) const {
+      assert(Contains(item));
+      return item - m_from;
     }
 
-    uint32_t Size() const {
-      if (m_min > m_max)
-        return 0;
-      return m_max - m_min + 1;
-    }
-
-    int32_t m_min = std::numeric_limits<int32_t>::max();
-    int32_t m_max = std::numeric_limits<int32_t>::min();
+    std::vector<int32_t> m_cover;
+    int32_t m_from{};
+    int32_t m_to{};
+    bool m_slack{};
   };
 
   template <uint32_t N>
@@ -77,12 +91,18 @@ public:
     };
 
     template <typename... Args>
-    DimTask(Args&&... args) : m_sizes{static_cast<uint32_t>(args)...}, m_slack{} {}
+    DimTask(Args&&... args) : m_dims{std::forward<Args>(args)...} {}
 
     template <uint32_t Dim>
     void SetSlack() {
       static_assert(Dim < N);
-      m_slack[Dim] = true;
+      m_dims[Dim].m_slack = true;
+    }
+
+    template <uint32_t Dim>
+    void SetCover(int32_t item) {
+      static_assert(Dim < N);
+      m_dims[Dim].m_cover.push_back(item);
     }
 
     OptionBuilder AddOption() {
@@ -97,49 +117,36 @@ public:
 
     Task Convert() const {
       std::array<uint32_t, N + 1> offsets{};
-      offsets[0] = 0;
       for (uint32_t i = 0; i < N; ++i)
-        offsets[i + 1] = offsets[i] + m_sizes[i];
+        offsets[i + 1] = offsets[i] + m_dims[i].Size();
 
       const uint32_t numItems = offsets[N];
 
       Task task{numItems};
       for (uint32_t dim = 0; dim < N; ++dim) {
-        if (!m_slack[dim])
-          continue;
-        for (uint32_t i = offsets[dim]; i < offsets[dim + 1]; ++i)
-          task.SetSlack(i);
-      }
-
-      std::array<Range, N> ranges;
-      for (const auto& option : m_options) {
-        for (uint32_t dim = 0; dim < N; ++dim) {
-          auto& range = ranges[dim];
-          for (const auto& item : option[dim])
-            range.Update(item);
+        if (m_dims[dim].m_slack) {
+          for (uint32_t i = offsets[dim]; i < offsets[dim + 1]; ++i)
+            task.SetSlack(i);
         }
-      }
-
-      for (uint32_t dim = 0; dim < N; ++dim) {
-        assert(ranges[dim].Size() <= m_sizes[dim]);
+        for (const auto& item : m_dims[dim].m_cover)
+          task.SetCover(offsets[dim] + m_dims[dim].GetOffset(item));
       }
 
       for (const auto& option : m_options) {
         std::vector<uint32_t> row;
+
         for (uint32_t dim = 0; dim < N; ++dim) {
-          for (const auto& item : option[dim]) {
-            const uint32_t pos = static_cast<uint32_t>(item - ranges[dim].m_min) + offsets[dim];
-            row.push_back(pos);
-          }
+          for (const auto& item : option[dim])
+            row.push_back(offsets[dim] + m_dims[dim].GetOffset(item));
         }
+
         task.AddOption(row);
       }
       return task;
     }
 
   private:
-    std::array<uint32_t, N> m_sizes;
-    std::array<bool, N> m_slack;
+    std::array<Dim, N> m_dims;
     std::vector<Option> m_options;
   };
 
@@ -306,6 +313,12 @@ public:
 
     Table table{task};
     HeadList head{table};
+
+    for (uint32_t i = 0; i < task.NumItems(); ++i) {
+      if (task.IsCover(i))
+        head.Cover(i);
+    }
+
     size_t level = 0;
 
   enter : {
