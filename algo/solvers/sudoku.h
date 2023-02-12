@@ -2,6 +2,7 @@
 
 #include "solvers/dlx.h"
 
+#include <algorithm>
 #include <array>
 #include <cassert>
 #include <cstdint>
@@ -25,24 +26,23 @@ public:
 
   template <typename Cont, typename Value>
   static bool AllEqual(const Cont& c, const Value& v) {
-    for (const auto& i : c) {
-      if (i != v)
-        return false;
-    }
-    return true;
+    return std::all_of(std::begin(c), std::end(c), [&v](const auto& i) { return i == v; });
   }
 
-  static bool IsGood(const Board& board) {
-    std::array<uint32_t, N> rows{};
-    std::array<uint32_t, N> cols{};
-    std::array<uint32_t, N> boxs{};
-
+  template <bool IsComplete>
+  static bool GetFootprint(const Board& board,
+                           std::array<uint32_t, N>& rows,
+                           std::array<uint32_t, N>& cols,
+                           std::array<uint32_t, N>& boxs) {
     bool good = true;
+
     ForEach([&](uint32_t r, uint32_t c, uint32_t b) {
       if (board[r][c] < 1 || board[r][c] > N) {
-        good = false;
+        if (IsComplete)
+          good = false;
         return;
       }
+
       const auto bit = static_cast<uint32_t>(1) << (board[r][c] - 1);
       if (rows[r] & bit) {
         good = false;
@@ -61,8 +61,18 @@ public:
       boxs[b] |= bit;
     });
 
+    return good;
+  }
+
+  static bool IsGood(const Board& board) {
+    std::array<uint32_t, N> rows{};
+    std::array<uint32_t, N> cols{};
+    std::array<uint32_t, N> boxs{};
+    if (!GetFootprint</* IsComplete= */ true>(board, rows, cols, boxs))
+      return false;
+
     const uint32_t FULL_MASK = 0x1ff;
-    return good && AllEqual(rows, FULL_MASK) && AllEqual(cols, FULL_MASK) && AllEqual(boxs, FULL_MASK);
+    return AllEqual(rows, FULL_MASK) && AllEqual(cols, FULL_MASK) && AllEqual(boxs, FULL_MASK);
   }
 
   template <typename Fn>
@@ -71,19 +81,10 @@ public:
     std::array<uint32_t, N> cols{};
     std::array<uint32_t, N> boxs{};
 
-    ForEach([&](uint32_t r, uint32_t c, uint32_t b) {
-      if (board[r][c] < 1 || board[r][c] > N)
-        return;
-
-      const auto bit = static_cast<uint32_t>(1) << (board[r][c] - 1);
-      assert((rows[r] & bit) == 0);
-      assert((cols[c] & bit) == 0);
-      assert((boxs[b] & bit) == 0);
-
-      rows[r] |= bit;
-      cols[c] |= bit;
-      boxs[b] |= bit;
-    });
+    if (!GetFootprint</* IsComplete= */ false>(board, rows, cols, boxs)) {
+      assert(false);
+      return;
+    }
 
     enum { CELL, ROW, COL, BOX, NUM_DIMS };
     DLX::DimTask<NUM_DIMS> task{N * N, N * N, N * N, N * N};
