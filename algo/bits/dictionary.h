@@ -9,12 +9,6 @@
 
 namespace algo {
 struct DictionaryLeaf {
-  void Set(uint64_t i, bool v) {
-    assert(i < 64);
-    m_bits = m_bits & ~(static_cast<uint64_t>(1) << i);
-    m_bits = m_bits | (static_cast<uint64_t>(v) << i);
-  }
-
   void Set(uint64_t i) {
     assert(i < 64);
     m_bits = m_bits | (static_cast<uint64_t>(1) << i);
@@ -71,15 +65,6 @@ struct Dictionary {
 
   static constexpr uint64_t NUM_CHILDREN = static_cast<uint64_t>(1) << POW_NUM_CHILDREN;
   static constexpr uint64_t BLOCK_SIZE = static_cast<uint64_t>(1) << POW_BLOCK_SIZE;
-
-  void Set(uint64_t i, bool v) {
-    const auto block = i / BLOCK_SIZE;
-    const auto offset = i % BLOCK_SIZE;
-    m_children[block].Set(offset, v);
-
-    const auto empty = m_children[block].Empty();
-    m_aux.Set(block, !empty);
-  }
 
   void Set(uint64_t i) {
     const auto block = i / BLOCK_SIZE;
