@@ -15,6 +15,16 @@ struct DictionaryLeaf {
     m_bits = m_bits | (static_cast<uint64_t>(v) << i);
   }
 
+  void Set(uint64_t i) {
+    assert(i < 64);
+    m_bits = m_bits | (static_cast<uint64_t>(1) << i);
+  }
+
+  void Clear(uint64_t i) {
+    assert(i < 64);
+    m_bits = m_bits & ~(static_cast<uint64_t>(1) << i);
+  }
+
   bool Get(uint64_t i) const {
     assert(i < 64);
     return (m_bits >> i) & 1;
@@ -68,7 +78,22 @@ struct Dictionary {
     m_children[block].Set(offset, v);
 
     const auto empty = m_children[block].Empty();
-    m_bits.Set(block, !empty);
+    m_aux.Set(block, !empty);
+  }
+
+  void Set(uint64_t i) {
+    const auto block = i / BLOCK_SIZE;
+    const auto offset = i % BLOCK_SIZE;
+    m_children[block].Set(offset);
+    m_aux.Set(block);
+  }
+
+  void Clear(uint64_t i) {
+    const auto block = i / BLOCK_SIZE;
+    const auto offset = i % BLOCK_SIZE;
+    m_children[block].Clear(offset);
+    if (m_children[block].Empty())
+      m_aux.Clear(block);
   }
 
   bool Get(uint64_t i) const {
@@ -77,19 +102,19 @@ struct Dictionary {
     return m_children[block].Get(offset);
   }
 
-  bool Empty() const { return m_bits.Empty(); }
+  bool Empty() const { return m_aux.Empty(); }
 
   std::optional<uint64_t> Min() const {
     if (Empty())
       return {};
-    const auto block = m_bits.Min();
+    const auto block = m_aux.Min();
     return *m_children[*block].Min() + (*block) * BLOCK_SIZE;
   }
 
   std::optional<uint64_t> Max() const {
     if (Empty())
       return {};
-    const auto block = m_bits.Max();
+    const auto block = m_aux.Max();
     return *m_children[*block].Max() + (*block) * BLOCK_SIZE;
   }
 
@@ -100,7 +125,7 @@ struct Dictionary {
     if (const auto pred = m_children[block].Pred(offset))
       return *pred + block * BLOCK_SIZE;
 
-    if (const auto pred = m_bits.Pred(block))
+    if (const auto pred = m_aux.Pred(block))
       return *m_children[*pred].Max() + (*pred) * BLOCK_SIZE;
 
     return {};
@@ -113,14 +138,14 @@ struct Dictionary {
     if (const auto succ = m_children[block].Succ(offset))
       return *succ + block * BLOCK_SIZE;
 
-    if (const auto succ = m_bits.Succ(block))
+    if (const auto succ = m_aux.Succ(block))
       return *m_children[*succ].Min() + (*succ) * BLOCK_SIZE;
 
     return {};
   }
 
   std::array<Dictionary<POW_BLOCK_SIZE>, NUM_CHILDREN> m_children;
-  DictionaryLeaf m_bits;
+  DictionaryLeaf m_aux;
 };
 
 template <>

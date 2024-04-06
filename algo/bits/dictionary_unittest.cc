@@ -14,7 +14,7 @@ TEST(Bits, DictionaryLeaf) {
   ASSERT_FALSE(dict.Succ(10).has_value());
   ASSERT_FALSE(dict.Pred(10).has_value());
 
-  dict.Set(10, true);
+  dict.Set(10);
   ASSERT_FALSE(dict.Get(3));
   ASSERT_TRUE(dict.Get(10));
   ASSERT_FALSE(dict.Get(42));
@@ -23,7 +23,7 @@ TEST(Bits, DictionaryLeaf) {
   ASSERT_FALSE(dict.Succ(10).has_value());
   ASSERT_FALSE(dict.Pred(10).has_value());
 
-  dict.Set(3, true);
+  dict.Set(3);
   ASSERT_TRUE(dict.Get(3));
   ASSERT_TRUE(dict.Get(10));
   ASSERT_FALSE(dict.Get(42));
@@ -32,7 +32,7 @@ TEST(Bits, DictionaryLeaf) {
   ASSERT_FALSE(dict.Succ(10).has_value());
   ASSERT_EQ(dict.Pred(10), 3);
 
-  dict.Set(42, true);
+  dict.Set(42);
   ASSERT_TRUE(dict.Get(3));
   ASSERT_TRUE(dict.Get(10));
   ASSERT_TRUE(dict.Get(42));
@@ -41,7 +41,7 @@ TEST(Bits, DictionaryLeaf) {
   ASSERT_EQ(dict.Succ(10), 42);
   ASSERT_EQ(dict.Pred(10), 3);
 
-  dict.Set(3, false);
+  dict.Clear(3);
   ASSERT_FALSE(dict.Get(3));
   ASSERT_TRUE(dict.Get(10));
   ASSERT_TRUE(dict.Get(42));
@@ -50,7 +50,7 @@ TEST(Bits, DictionaryLeaf) {
   ASSERT_EQ(dict.Succ(10), 42);
   ASSERT_FALSE(dict.Pred(10).has_value());
 
-  dict.Set(10, false);
+  dict.Clear(10);
   ASSERT_FALSE(dict.Get(3));
   ASSERT_FALSE(dict.Get(10));
   ASSERT_TRUE(dict.Get(42));
@@ -59,7 +59,7 @@ TEST(Bits, DictionaryLeaf) {
   ASSERT_EQ(dict.Succ(10), 42);
   ASSERT_FALSE(dict.Pred(10).has_value());
 
-  dict.Set(42, false);
+  dict.Clear(42);
   ASSERT_FALSE(dict.Get(3));
   ASSERT_FALSE(dict.Get(10));
   ASSERT_FALSE(dict.Get(42));
@@ -71,16 +71,16 @@ TEST(Bits, DictionaryLeaf) {
 
 TEST(Bits, Dictionary) {
   Dictionary<20> dict;
-  dict.Set(1, true);
-  dict.Set(3, true);
-  dict.Set(5, true);
+  dict.Set(1);
+  dict.Set(3);
+  dict.Set(5);
 
   ASSERT_EQ(dict.Succ(2), 3);
   ASSERT_EQ(dict.Pred(4), 3);
   ASSERT_FALSE(dict.Pred(1).has_value());
 
-  dict.Set(4, true);
-  dict.Set(3, false);
+  dict.Set(4);
+  dict.Clear(3);
 
   ASSERT_TRUE(dict.Get(4));
   ASSERT_FALSE(dict.Get(3));
