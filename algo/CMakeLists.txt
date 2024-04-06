@@ -3,6 +3,7 @@ include_directories(BEFORE .)
 clib_add_library(algo
   bits/bit_vector.h
   bits/bits.h
+  bits/dictionary.h
   bits/rs_table.cc
   bits/rs_table.h
   graph/kuhn.h
@@ -37,6 +38,7 @@ clib_add_library(algo
 clib_add_unittest(algo_unittest
   bits/bit_vector_unittest.cc
   bits/bits_unittest.cc
+  bits/dictionary_unittest.cc
   bits/rs_table_unittest.cc
   graph/kuhn_unittest.cc
   numeric/fft_unittest.cc
