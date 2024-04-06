@@ -66,6 +66,8 @@ struct Dictionary {
   static constexpr uint64_t NUM_CHILDREN = static_cast<uint64_t>(1) << POW_NUM_CHILDREN;
   static constexpr uint64_t BLOCK_SIZE = static_cast<uint64_t>(1) << POW_BLOCK_SIZE;
 
+  // Sets |i|-th bit.
+  // Complexity: O(LogSize).
   void Set(uint64_t i) {
     const auto block = i / BLOCK_SIZE;
     const auto offset = i % BLOCK_SIZE;
@@ -73,6 +75,8 @@ struct Dictionary {
     m_aux.Set(block);
   }
 
+  // Clears |i|-th bit.
+  // Complexity: O(LogSize).
   void Clear(uint64_t i) {
     const auto block = i / BLOCK_SIZE;
     const auto offset = i % BLOCK_SIZE;
@@ -81,28 +85,36 @@ struct Dictionary {
       m_aux.Clear(block);
   }
 
+  // Gets state of the |i|-th bit.
+  // Complexity: O(LogSize).
   bool Get(uint64_t i) const {
     const auto block = i / BLOCK_SIZE;
     const auto offset = i % BLOCK_SIZE;
     return m_children[block].Get(offset);
   }
 
+  // Returns true iff the dictionary is empty.
+  // Complexity: O(1).
   bool Empty() const { return m_aux.Empty(); }
 
+  // Returns min value from the dictionary.
+  // Complexity: O(LogSize).
   std::optional<uint64_t> Min() const {
-    if (Empty())
-      return {};
-    const auto block = m_aux.Min();
-    return *m_children[*block].Min() + (*block) * BLOCK_SIZE;
+    if (const auto block = m_aux.Min())
+      return *m_children[*block].Min() + (*block) * BLOCK_SIZE;
+    return {};
   }
 
+  // Returns max value from the dictionary.
+  // Complexity: O(LogSize).
   std::optional<uint64_t> Max() const {
-    if (Empty())
-      return {};
-    const auto block = m_aux.Max();
-    return *m_children[*block].Max() + (*block) * BLOCK_SIZE;
+    if (const auto block = m_aux.Max())
+      return *m_children[*block].Max() + (*block) * BLOCK_SIZE;
+    return {};
   }
 
+  // Returns rightmost set bit with position less than |i|.
+  // Complexity: O(LogSize * LogSize).
   std::optional<uint64_t> Pred(uint64_t i) const {
     const auto block = i / BLOCK_SIZE;
     const auto offset = i % BLOCK_SIZE;
@@ -116,6 +128,8 @@ struct Dictionary {
     return {};
   }
 
+  // Returns leftmost set bit with position greater than |i|.
+  // Complexity: O(LogSize * LogSize).
   std::optional<uint64_t> Succ(uint64_t i) const {
     const auto block = i / BLOCK_SIZE;
     const auto offset = i % BLOCK_SIZE;
