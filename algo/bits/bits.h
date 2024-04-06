@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <cstdint>
 
 namespace algo {
@@ -20,24 +21,21 @@ inline uint64_t BytesPopCount(uint64_t x) noexcept {
 
 inline uint8_t PopCount(uint64_t x) noexcept { return (BytesPopCount(x) * L(8)) >> 56; }
 
-inline uint8_t CeilLog(uint64_t x) noexcept {
-#define CHECK_RSH(x, msb, offset) \
-  if (x >> offset) {              \
-    x >>= offset;                 \
-    msb += offset;                \
-  }
-
-  uint8_t msb = 0;
-  CHECK_RSH(x, msb, 32);
-  CHECK_RSH(x, msb, 16);
-  CHECK_RSH(x, msb, 8);
-  CHECK_RSH(x, msb, 4);
-  CHECK_RSH(x, msb, 2);
-  CHECK_RSH(x, msb, 1);
-#undef CHECK_RSH
-
-  return msb;
+inline uint8_t LoPosUnsafe(uint64_t x) noexcept {
+  static_assert(sizeof(long long) == 8);
+  assert(x != 0);
+  return __builtin_ctzll(x);
 }
+
+inline uint8_t HiPosUnsafe(uint64_t x) noexcept {
+  static_assert(sizeof(long long) == 8);
+  assert(x != 0);
+  return 63 - __builtin_clzll(x);
+}
+
+inline uint8_t LoPos(uint64_t x) noexcept { return x == 0 ? 64 : LoPosUnsafe(x); }
+
+inline uint8_t HiPos(uint64_t x) noexcept { return x == 0 ? 0 : HiPosUnsafe(x); }
 
 inline uint64_t LSB(uint64_t x) noexcept { return x & (~x + 1); }
 }  // namespace algo
