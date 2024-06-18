@@ -6,6 +6,8 @@ clib_add_library(algo
   bits/dictionary.h
   bits/rs_table.cc
   bits/rs_table.h
+  geom/hull.cc
+  geom/point.cc
   graph/kuhn.h
   math/math.cc
   numeric/fft.cc
@@ -40,6 +42,7 @@ clib_add_unittest(algo_unittest
   bits/bits_unittest.cc
   bits/dictionary_unittest.cc
   bits/rs_table_unittest.cc
+  geom/hull_unittest.cc
   graph/kuhn_unittest.cc
   numeric/fft_unittest.cc
   numeric/matrix_unittest.cc
