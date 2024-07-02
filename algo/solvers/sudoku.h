@@ -64,12 +64,15 @@ public:
     return good;
   }
 
+  template <bool IsComplete>
   static bool IsGood(const Board& board) {
     std::array<uint32_t, N> rows{};
     std::array<uint32_t, N> cols{};
     std::array<uint32_t, N> boxs{};
-    if (!GetFootprint</* IsComplete= */ true>(board, rows, cols, boxs))
+    if (!GetFootprint<IsComplete>(board, rows, cols, boxs))
       return false;
+    if (!IsComplete)
+      return true;
 
     const uint32_t FULL_MASK = 0x1ff;
     return AllEqual(rows, FULL_MASK) && AllEqual(cols, FULL_MASK) && AllEqual(boxs, FULL_MASK);
@@ -77,38 +80,27 @@ public:
 
   template <typename Fn>
   static void Solve(const Board& board, Fn&& fn) {
-    std::array<uint32_t, N> rows{};
-    std::array<uint32_t, N> cols{};
-    std::array<uint32_t, N> boxs{};
-
-    if (!GetFootprint</* IsComplete= */ false>(board, rows, cols, boxs)) {
-      assert(false);
+    if (!IsGood</* IsComplete= */ false>(board))
       return;
-    }
 
     enum { CELL, ROW, COL, BOX, NUM_DIMS };
     DLX::DimTask<NUM_DIMS> task{N * N, N * N, N * N, N * N};
 
     ForEach([&](uint32_t r, uint32_t c, uint32_t b) {
       if (board[r][c] >= 1 && board[r][c] <= N) {
+        const auto v = board[r][c] - 1;
         task.template SetCover<CELL>(r * N + c);
-        return;
-      }
-
-      for (uint32_t v = 0; v < N; ++v) {
-        const auto bit = static_cast<uint32_t>(1) << v;
-        if (rows[r] & bit)
-          task.template SetCover<ROW>(r * N + v);
-        if (cols[c] & bit)
-          task.template SetCover<COL>(c * N + v);
-        if (boxs[b] & bit)
-          task.template SetCover<BOX>(b * N + v);
-
-        task.AddOption()
-            .template SetItems<CELL>(r * N + c)
-            .template SetItems<ROW>(r * N + v)
-            .template SetItems<COL>(c * N + v)
-            .template SetItems<BOX>(b * N + v);
+        task.template SetCover<ROW>(r * N + v);
+        task.template SetCover<COL>(c * N + v);
+        task.template SetCover<BOX>(b * N + v);
+      } else {
+        for (uint32_t v = 0; v < N; ++v) {
+          task.AddOption()
+              .template SetItems<CELL>(r * N + c)
+              .template SetItems<ROW>(r * N + v)
+              .template SetItems<COL>(c * N + v)
+              .template SetItems<BOX>(b * N + v);
+        }
       }
     });
 
