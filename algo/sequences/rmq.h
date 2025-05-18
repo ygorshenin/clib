@@ -8,7 +8,7 @@
 namespace algo {
 
 template <typename Value>
-using RMQIndex = std::vector<std::vector<Value> >;
+using RMQIndex = std::vector<std::vector<Value>>;
 
 template <typename T>
 T FloorLog(const T& n) {

@@ -15,7 +15,7 @@ TEST(Bits, RSTable_Smoke) {
   }
 
   {
-    for (auto size : {63, 64, 65}) {
+    for (const auto size : {63, 64, 65}) {
       BitVector bv(size);
       RSTable rs(bv);
       for (uint64_t i = 0; i <= bv.NumBits(); ++i)

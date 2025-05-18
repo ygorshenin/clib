@@ -3,6 +3,20 @@
 #include "bits/bits.h"
 
 namespace algo {
+TEST(Bits, L) {
+  ASSERT_EQ(0xFFFFFFFFFFFFFFFF, L(1));
+  ASSERT_EQ(0x5555555555555555, L(2));
+  ASSERT_EQ(0x9249249249249249, L(3));
+  ASSERT_EQ(0x1111111111111111, L(4));
+}
+
+TEST(Bits, H) {
+  ASSERT_EQ(0xFFFFFFFFFFFFFFFF, H(1));
+  ASSERT_EQ(0xAAAAAAAAAAAAAAAA, H(2));
+  ASSERT_EQ(0x4924924924924924, H(3));
+  ASSERT_EQ(0x8888888888888888, H(4));
+}
+
 TEST(Bits, PopCount) {
   ASSERT_EQ(static_cast<uint8_t>(0), PopCount(0x0));
   ASSERT_EQ(static_cast<uint8_t>(1), PopCount(0x1));

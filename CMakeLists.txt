@@ -10,7 +10,7 @@ find_package(Threads REQUIRED)
 add_compile_options(
   "-Wall"
   "-pedantic"
-  "-std=c++1z"
+  "-std=c++20"
 )
 
 if (USE_ASAN)
