@@ -8,26 +8,26 @@ namespace algo {
 template <typename T>
 class Fenwick {
 public:
-  Fenwick(size_t size) : buffer_(size) {}
+  explicit Fenwick(size_t size) : m_buffer(size) {}
 
   // Adds |value| to an element on a position |index|.
   void Add(size_t index, const T& value) {
-    assert(index < buffer_.size());
+    assert(index < m_buffer.size());
 
-    while (index < buffer_.size()) {
-      buffer_[index] += value;
+    while (index < m_buffer.size()) {
+      m_buffer[index] += value;
       index = G(index);
     }
   }
 
   // Returns sum on a range [0, |to|).
   T Sum(size_t to) const {
-    assert(to <= buffer_.size());
+    assert(to <= m_buffer.size());
 
     T result{};
     while (to != 0) {
       --to;
-      result += buffer_[to];
+      result += m_buffer[to];
       to = F(to);
     }
     return result;
@@ -41,12 +41,12 @@ public:
     return Sum(to) - Sum(from);
   }
 
-  inline size_t size() const { return buffer_.size(); }
+  size_t Size() const { return m_buffer.size(); }
 
 private:
-  static inline size_t F(size_t index) { return index & (index + 1); }
-  static inline size_t G(size_t index) { return index | (index + 1); }
+  static size_t F(size_t index) { return index & (index + 1); }
+  static size_t G(size_t index) { return index | (index + 1); }
 
-  std::vector<T> buffer_;
+  std::vector<T> m_buffer;
 };
 }  // namespace algo

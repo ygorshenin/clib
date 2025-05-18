@@ -19,42 +19,42 @@ public:
   // number of bits. Therefore, there should be one more zero block
   // for the case when number of bits divides by 64, as there is a
   // position after the last bit that is in this dummy zero block.
-  BitVector(uint64_t num_bits) : blocks_(((num_bits + 63) >> 6) + (num_bits % 64 == 0)), num_bits_(num_bits) {}
+  explicit BitVector(uint64_t numBits) : m_blocks(((numBits + 63) >> 6) + (numBits % 64 == 0)), m_numBits(numBits) {}
 
-  inline void Set(uint64_t bit) {
-    assert(bit < num_bits_);
+  void Set(uint64_t bit) {
+    assert(bit < m_numBits);
     BLOCK_OFFSET(bit);
-    blocks_[block] |= static_cast<uint64_t>(1) << offset;
+    m_blocks[block] |= static_cast<uint64_t>(1) << offset;
   }
 
-  inline void Clear(uint64_t bit) {
-    assert(bit < num_bits_);
+  void Clear(uint64_t bit) {
+    assert(bit < m_numBits);
     BLOCK_OFFSET(bit);
-    blocks_[block] &= ~(static_cast<uint64_t>(1) << offset);
+    m_blocks[block] &= ~(static_cast<uint64_t>(1) << offset);
   }
 
-  inline bool Test(uint64_t bit) const {
-    assert(bit < num_bits_);
+  bool Test(uint64_t bit) const {
+    assert(bit < m_numBits);
     BLOCK_OFFSET(bit);
-    return blocks_[block] & (static_cast<uint64_t>(1) << offset);
+    return m_blocks[block] & (static_cast<uint64_t>(1) << offset);
   }
 
-  inline uint64_t& Block(uint64_t block) {
-    assert(block < blocks_.size());
-    return blocks_[block];
+  uint64_t& Block(uint64_t block) {
+    assert(block < m_blocks.size());
+    return m_blocks[block];
   }
 
-  inline const uint64_t& Block(uint64_t block) const {
-    assert(block < blocks_.size());
-    return blocks_[block];
+  const uint64_t& Block(uint64_t block) const {
+    assert(block < m_blocks.size());
+    return m_blocks[block];
   }
 
-  inline uint64_t NumBits() const { return num_bits_; }
+  uint64_t NumBits() const { return m_numBits; }
 
-  inline uint64_t NumBlocks() const { return blocks_.size(); }
+  uint64_t NumBlocks() const { return m_blocks.size(); }
 
 private:
-  std::vector<uint64_t> blocks_;
-  uint64_t const num_bits_;
+  std::vector<uint64_t> m_blocks;
+  uint64_t const m_numBits;
 };
 }  // namespace algo

@@ -47,6 +47,6 @@ struct DSU {
 
   std::vector<size_t> m_parent;
   std::vector<size_t> m_rank;
-  size_t m_numComponents;
+  size_t m_numComponents{};
 };
 }  // namespace algo
